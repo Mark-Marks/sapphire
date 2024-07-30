@@ -58,6 +58,7 @@ sapphire()
 - [ ] Make basic, extensible module loader
 - [ ] Add pre-built extensions:
   - [ ] `sapphire_lifecycles` - extra lifecycles for `RunService` and `Players`
+  - [ ] `sapphire_logging` - a nice logging library with a log history
   - [ ] `sapphire_net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
   - [ ] `sapphire_data` - batteries included wrapper for an existing data library like `keyForm`
   - [ ] `sapphire_ecr` - scheduler for ECR with niceties
