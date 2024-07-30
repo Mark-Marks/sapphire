@@ -3,6 +3,7 @@ A lightweight module loader or a batteries included framework
 
 # Vision
 - A simple, short module loader that can be extended into a fully fledged framework taking care of networking, logging, data, ECS system scheduling, etc.
+- roblox-ts support
 - By default can be as simple as:
 ```luau
 local sapphire = require("@packages/sapphire")
