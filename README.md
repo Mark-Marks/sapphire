@@ -21,7 +21,7 @@ end
 
 return singleton
 ```
-- Singletons can have priority by specifying an optional `priority` property
+- Singletons can have priority by specifying an optional `priority` property:
 ```luau
 local singleton = {}
 singleton.priority = 1234
@@ -61,6 +61,7 @@ sapphire()
   - [ ] `sapphire_data` - batteries included wrapper for an existing data library like `keyForm`
   - [ ] `sapphire_ecr` - scheduler for ECR with niceties
   - [ ] `sapphire_jecs` - scheduler for JECS with niceties
+- [ ] Testing
      
 # Note
 Partially inspired by [team-fireworks/ohmyprvd](https://github.com/team-fireworks/ohmyprvd)!
