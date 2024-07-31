@@ -19,6 +19,6 @@
   "homepage": "https://github.com/Mark-Marks/sapphire#readme",
   "dependencies": {
     "@rbxts/ecr": "^0.8.0-ts.2",
-    "@rbxts/sapphire": "^0.1.1-ts.1"
+    "@rbxts/sapphire": "^0.1.2-ts.1"
   }
 }

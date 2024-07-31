@@ -16,12 +16,17 @@ export type system = {
 }
 
 local World = {}
+--- @readonly
 World.identifier = "sapphire-ecr"
+--- @readonly
 World.methods = {}
 
 World.registry = ecr.registry()
+--- @readonly
 World.stepped_systems = {} :: { system }
+--- @readonly
 World.heartbeat_systems = {} :: { system }
+--- @readonly
 World.render_stepped_systems = {} :: { system }
 
 function World.extension()
@@ -88,14 +93,27 @@ local function create_spawner(...)
     }
 end
 
+--- Creates a spawner.
+--- ```luau
+--- local spawner = sapphire_ecr.create_spawner(components.part, components.velocity, components.position)
+--- for _ = 1, 1000 do
+---     spawner.spawn(part_template:Clone(), Vector3.new(0, 0, 0), Vector3.new(0, 0, 0))
+--- end
+--- ```
+--- @param ... T... -- Components to use.
+--- @return spawner<T...>
 function World.create_spawner<T...>(...: T...): spawner<T...>
     return create_spawner(...)
 end
 
+--- Creates an entity and returns it's id.
+--- @return ecr.entity
 function World.spawn_entity(): ecr.entity
     return World.registry:create()
 end
 
+--- Creates an entity and returns a handle to it.
+--- @return ecr.Handle
 function World.spawn_entity_with_handle(): ecr.Handle
     local entity = World.spawn_entity()
     return World.registry:handle(entity)

@@ -69,15 +69,15 @@ export type sapphire = {
         on_singleton_started: Signal<singleton>,
     },
 
-    --- @private
+    --- @readonly
     --- Map of identifiers to registered singletons.\
     --- ⚠️ Use `:register_singleton()` or `:register_singletons()` instead of editing directly.
     _singletons: { [string]: singleton },
-    --- @private
+    --- @readonly
     --- Map of identifiers to registered extensions.\
     --- ⚠️ Use `:use()` instead of editing directly.
     _extensions: { [string]: extension },
-    --- @private
+    --- @readonly
     --- Array of registered extended methods.\
     --- ⚠️ Use an extension instead of editing directly.
     _extra_methods: { [string]: (singleton: singleton) -> () },
