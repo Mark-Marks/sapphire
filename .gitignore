@@ -7,3 +7,5 @@ roblox.yaml
 roblox.toml
 globalTypes.d.luau
 **/sourcemap.json
+**/node_modules
+**/package-lock.json
