@@ -122,7 +122,7 @@ local function constructor(): sapphire
             return self -- Doesn't throw, an extension can register an extension
         end
 
-        task.spawn(extension.extension, self, config :: any)
+        task.spawn(extension.extension, self)
 
         for method, registrant in self._extra_methods do
             if not extension[method] then
