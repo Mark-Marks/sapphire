@@ -1,5 +1,4 @@
 --!nocheck
-local fs = require("@lune/fs")
 local process = require("@lune/process")
 
 local function start_process(cmd: string, cwd: string?)
@@ -13,12 +12,3 @@ end
 start_process("wally install")
 start_process("rojo sourcemap dev.project.json -o sourcemap.json")
 start_process("wally-package-types --sourcemap sourcemap.json Packages/")
-
-for _, crate_name in fs.readDir("crates") do
-    local cwd = `crates/{crate_name}`
-    if not fs.isDir(cwd) then
-        continue
-    end
-
-    start_process("wally install", cwd)
-end

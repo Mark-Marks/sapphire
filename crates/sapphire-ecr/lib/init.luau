@@ -64,7 +64,7 @@ local function create_spawner(...)
         local passed = { ... }
         local entity = World.spawn_entity()
 
-        for index, component in components do
+        for index, _ in components do
             World.registry:add(entity, passed[index])
         end
 
@@ -75,7 +75,7 @@ local function create_spawner(...)
         local passed = { ... }
         local entity = World.spawn_entity_with_handle()
 
-        for index, component in components do
+        for index, _ in components do
             entity:add(passed[index])
         end
 
