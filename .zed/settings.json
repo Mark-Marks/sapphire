@@ -31,5 +31,10 @@
         }
       }
     }
+  },
+  "languages": {
+    "TypeScript": {
+      "tab_size": 4
+    }
   }
 }

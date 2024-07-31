@@ -20,14 +20,14 @@ export type Signal<T...> = {
 --- @interface
 --- Registerable singleton.
 export type singleton = {
-    -- Identifiers are overwritten by sapphire. They shouldn't be specified in the singleton.
+    -- The name of the ModuleScript which holds the singleton. Overwritten by sapphire.
     identifier: string?,
     --- Any singleton without priority will automatically have it's priority set to 1.
     priority: number?,
 
     --- Initializes the singleton.\
     --- Called prior to all singletons being started and their lifecycles ran.\
-    --- `.start()` should be preferred unless you need `.init()`'s unique behavior.\
+    --- `.start()` should be preferred unless you need `.init()`'s unique behaviour.\
     --- ⚠️ Do not yield! This is called on the main thread.
     init: (() -> ())?,
     --- Starts the singleton.\
@@ -50,11 +50,6 @@ export type extension = {
     extension: (sapphire: sapphire) -> (),
 
     --- Registers the given methods within sapphire.
-    --- ```luau
-    --- local function on_heartbeat(singleton_method: (delta_time: number) -> ())
-    ---     heartbeat_signal:Connect(singleton_method)
-    --- end
-    --- ```
     methods: { [string]: (singleton_method: (any) -> ()) -> () }?,
 
     [string]: any,
@@ -62,10 +57,15 @@ export type extension = {
 
 --- @class
 export type sapphire = {
+    --- List of signals ran during certain stages.
     signals: {
+        --- Runs after an extension is registered.
         on_extension_registered: Signal<extension>,
+        --- Runs after a singleton is registered.
         on_singleton_registered: Signal<singleton>,
+        --- Runs after a singleton is initialized.
         on_singleton_initialized: Signal<singleton>,
+        --- Runs after a singleton is started.
         on_singleton_started: Signal<singleton>,
     },
 
@@ -90,10 +90,10 @@ export type sapphire = {
 
     --- Registers a singleton.
     --- @param self sapphire
-    --- @param identifier string -- What to identify the singleton by
-    --- @param singleton singleton
+    --- @param mod ModuleScript
     --- @return sapphire
     register_singleton: (self: sapphire, mod: ModuleScript) -> sapphire,
+
     --- Registers multiple singletons parented to a container.
     --- @param self sapphire
     --- @param container Folder
