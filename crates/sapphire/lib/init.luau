@@ -50,7 +50,7 @@ export type extension = {
     extension: (sapphire: sapphire) -> (),
 
     --- Registers the given methods within sapphire.
-    methods: { [string]: (singleton_method: (any) -> ()) -> () }?,
+    methods: { [string]: (singleton: singleton) -> () }?,
 
     [string]: any,
 }
@@ -80,7 +80,7 @@ export type sapphire = {
     --- @private
     --- Array of registered extended methods.\
     --- ⚠️ Use an extension instead of editing directly.
-    _extra_methods: { [string]: (singleton_method: () -> ()) -> () },
+    _extra_methods: { [string]: (singleton: singleton) -> () },
 
     --- Uses an extension.
     --- @param self sapphire
@@ -122,13 +122,13 @@ local function constructor(): sapphire
             return self -- Doesn't throw, an extension can register an extension
         end
 
-        task.spawn(extension.extension, self)
+        task.spawn(extension.extension, self, config :: any)
 
         for method, registrant in self._extra_methods do
             if not extension[method] then
                 continue
             end
-            fast_spawn(registrant, extension[method])
+            fast_spawn(registrant, extension)
         end
 
         if extension.methods then
@@ -220,7 +220,7 @@ local function constructor(): sapphire
                     continue
                 end
 
-                fast_spawn(registrant, singleton[method])
+                fast_spawn(registrant, singleton)
             end
 
             self.signals.on_singleton_started:Fire(singleton)

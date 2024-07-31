@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local sapphire = require(ReplicatedStorage.Packages.sapphire)
 local signal = require(ReplicatedStorage.Packages.signal)
 local heartbeat_signal = signal()
 
@@ -10,8 +11,8 @@ local function extension()
     end)
 end
 
-local function heartbeat_registrant(singleton_method: (delta_time: number) -> ())
-    heartbeat_signal:Connect(singleton_method)
+local function heartbeat_registrant(singleton: sapphire.singleton)
+    heartbeat_signal:Connect(singleton.on_heartbeat)
 end
 
 return {

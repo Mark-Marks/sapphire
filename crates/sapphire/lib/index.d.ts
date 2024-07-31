@@ -62,7 +62,7 @@ declare interface extension {
     /**
      * Registers the given methods within sapphire.
      */
-    methods?: Map<string, (singleton_method: (args: any) => void) => void>;
+    methods?: Map<string, (singleton: singleton) => void>;
 
     [key: string]: any;
 }
