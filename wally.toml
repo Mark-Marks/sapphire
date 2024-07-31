@@ -1,0 +1,15 @@
+[package]
+name = "mark-marks/sapphire-dev"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+exclude = ["**"]
+
+[dependencies]
+squash = "data-oriented-house/squash@2.3.2"
+ecr = "centau/ecr@0.8.0"
+jecs = "ukendio/jecs@0.2.5"
+signal = "red-blox/signal@2.0.2"
+keyform = "ffrostflame/keyform@0.2.2"
+spawn = "red-blox/spawn@1.1.0"

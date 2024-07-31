@@ -13,6 +13,9 @@
               "suggestServices": true,
               "suggestRequires": false
             }
+          },
+          "sourcemap": {
+            "rojoProjectFile": "dev.project.json"
           }
         },
         "ext": {

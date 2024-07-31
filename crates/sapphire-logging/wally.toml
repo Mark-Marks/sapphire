@@ -15,3 +15,4 @@ include = [
 ]
 
 [dependencies]
+signal = "red-blox/signal@2.0.2"

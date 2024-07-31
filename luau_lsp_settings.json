@@ -1,3 +1,6 @@
 {
-  "luau-lsp.platform.type": "roblox"
+  "luau-lsp.platform.type": "roblox",
+  "luau-lsp.fflags.override": {
+    "LuauTinyControlFlowAnalysis": "true"
+  }
 }

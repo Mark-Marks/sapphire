@@ -1,0 +1,44 @@
+{
+  "name": "sapphire-dev",
+  "tree": {
+    "$className": "DataModel",
+
+    "ServerScriptService": {
+      "$path": "dev/server"
+    },
+
+    "ReplicatedStorage": {
+      "$path": "dev/shared",
+      "Packages": {
+        "$path": "Packages",
+        "sapphire": {
+          "$path": "crates/sapphire"
+        },
+        "sapphire_data": {
+          "$path": "crates/sapphire-data"
+        },
+        "sapphire_ecr": {
+          "$path": "crates/sapphire-ecr"
+        },
+        "sapphire_jecs": {
+          "$path": "crates/sapphire-jecs"
+        },
+        "sapphire_lifecycles": {
+          "$path": "crates/sapphire-lifecycles"
+        },
+        "sapphire-logging": {
+          "$path": "crates/sapphire-logging"
+        },
+        "sapphire-net": {
+          "$path": "crates/sapphire-net"
+        }
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "dev/client"
+      }
+    }
+  }
+}

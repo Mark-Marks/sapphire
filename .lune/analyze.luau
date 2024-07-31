@@ -12,6 +12,7 @@ end
 
 start_process("lune run .lune/install-packages.luau")
 start_process("curl -O https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau")
+start_process("rojo sourcemap dev.project.json -o sourcemap.json")
 
 for _, crate_name in fs.readDir("crates") do
     local cwd = `crates/{crate_name}`
@@ -21,7 +22,6 @@ for _, crate_name in fs.readDir("crates") do
 
     start_process("rojo sourcemap default.project.json -o sourcemap.json", cwd)
     start_process(
-        "luau-lsp analyze --definitions=../../globalTypes.d.luau --base-luaurc=../../.luaurc --sourcemap=sourcemap.json --settings=../../luau_lsp_settings.json --no-strict-dm-types --ignore Packages/**/*.lua --ignore Packages/**/*.luau lib/",
-        cwd
+        `luau-lsp analyze --definitions=globalTypes.d.luau --base-luaurc=.luaurc --sourcemap=sourcemap.json --settings=luau_lsp_settings.json --no-strict-dm-types --ignore Packages/**/*.lua --ignore Packages/**/*.luau --ignore {cwd}/Packages/**/*.lua --ignore {cwd}/Packages/**/*.luau {cwd}/lib/`
     )
 end
