@@ -1,6 +1,12 @@
 # sapphire
 A lightweight module loader or a batteries included framework
 
+# Installation
+Add `sapphire` to your `wally.toml`:
+```toml
+sapphire = "mark-marks/sapphire@LATEST" # change LATEST to latest version
+```
+
 # Vision
 - A simple, short module loader that can be extended into a fully fledged framework taking care of networking, logging, data, ECS system scheduling, etc.
 - roblox-ts support
@@ -10,8 +16,8 @@ local sapphire = require("@packages/sapphire")
 local singletons = ...
 
 sapphire()
-    .add_singletons(singletons)
-    .start()
+    :add_singletons(singletons)
+    :start()
 ```
 - Singletons don't have to require sapphire itself for anything:
 ```luau
@@ -25,7 +31,7 @@ return singleton
 - Singletons can have priority by specifying an optional `priority` property:
 ```luau
 local singleton = {}
-singleton.priority = 1234
+singleton.priority = 1234 -- 1 is the lowest priority
 ```
 - Doesn't use any custom module loaders, depends on `require()` to not sacrifice types:
 ```luau
@@ -33,19 +39,32 @@ local dependency = require("@singletons/dependency")
 ```
 - Can be extended with `.use()`, which instantly runs a singleton that can add extra functionality:
 ```luau
-type extension = {
-    start: (sapphire) -> (), -- extensions' `.start()` lifecycle is additionally called with the framework itself
-    lifecycles: { [string]: () -> () }, -- to add extra lifecycles to singletons
+export type extension = {
+    --- What to identify the extension by.
+    identifier: string,
+
+    --- Starts the extension. This is called prior to any methods being registered.
+    --- @param sapphire sapphire
+    extension: (sapphire: sapphire) -> (),
+
+    --- Registers the given methods within sapphire.
+    --- ```luau
+    --- local function on_heartbeat(singleton_method: (delta_time: number) -> ())
+    ---     heartbeat_signal:Connect(singleton_method)
+    --- end
+    --- ```
+    methods: { [string]: (singleton_method: (any) -> ()) -> () }?,
+
+    [string]: any,
 }
-type use = (extension) -> builder
 ```
 ```luau
 local sapphire_lifecycles = require("@packages/sapphire-lifecycles")
 local sapphire_net = require("@packages/sapphire-net")
 
 sapphire()
-    .use(sapphire_lifecycles) -- Adds extra lifecycles
-    .use(sapphire_net) -- Initializes the networking library
+    :use(sapphire_lifecycles) -- Adds extra lifecycles
+    :use(sapphire_net) -- Initializes the networking library
 -- Extensions are ran instantly! `sapphire_net` can use a `.heartbeat()` lifecycle if `sapphire_lifecycles` adds it, but also `sapphire_lifecycles` can't use any features from `sapphire_net`
 ```
 - If an extension needs complex functionality and doesn't need custom functionality or functionality that doesn't exist, it should use an existing libary. For example:
