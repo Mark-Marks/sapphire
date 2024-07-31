@@ -17,4 +17,4 @@ include = [
 [dependencies]
 ecr = "centau/ecr@0.8.0"
 spawn = "red-blox/spawn@1.1.0"
-sapphire = "mark-marks/sapphire@0.1.1"
+sapphire = "mark-marks/sapphire@0.1.2"
