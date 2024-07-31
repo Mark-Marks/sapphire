@@ -1,0 +1,17 @@
+[package]
+name = "mark-marks/sapphire-logging"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+exclude = ["**"]
+include = [
+    "default.project.json",
+    "lib",
+    "lib/**",
+    "LICENSE",
+    "wally.toml",
+    "README.md",
+]
+
+[dependencies]

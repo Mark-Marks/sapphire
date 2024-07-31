@@ -1,0 +1,9 @@
+// Static tasks configuration.
+//
+// Example:
+[
+  {
+    "label": "Check",
+    "command": "lune run .lune/check.luau"
+  }
+]

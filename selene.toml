@@ -1,0 +1,10 @@
+std = "roblox"
+exclude = [
+    "crates/sapphire/Packages",
+    "crates/sapphire-data/Packages",
+    "crates/sapphire-ecr/Packages",
+    "crates/sapphire-jecs/Packages",
+    "crates/sapphire-lifecycles/Packages",
+    "crates/sapphire-logging/Packages",
+    "crates/sapphire-net/Packages",
+]

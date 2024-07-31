@@ -40,8 +40,8 @@ type extension = {
 type use = (extension) -> builder
 ```
 ```luau
-local sapphire_lifecycles = require("@packages/sapphire_lifecycles")
-local sapphire_net = require("@packages/sapphire_net")
+local sapphire_lifecycles = require("@packages/sapphire-lifecycles")
+local sapphire_net = require("@packages/sapphire-net")
 
 sapphire()
     .use(sapphire_lifecycles) -- Adds extra lifecycles
@@ -49,21 +49,21 @@ sapphire()
 -- Extensions are ran instantly! `sapphire_net` can use a `.heartbeat()` lifecycle if `sapphire_lifecycles` adds it, but also `sapphire_lifecycles` can't use any features from `sapphire_net`
 ```
 - If an extension needs complex functionality and doesn't need custom functionality or functionality that doesn't exist, it should use an existing libary. For example:
-  - A `sapphire_lifecycles` extension wouldn't need any complex functionality and wouldn't use any library
-  - A `sapphire_net` extension would be different from existing networking libraries and wouldn't use any networking library, but would use a library such as `Squash` to not re-implement serdes
-  - A `sapphire_ecs` or `sapphire_data` extension wouldn't need any new functionality so it would use an existing library like `ECR` or `keyForm` (in order)
+  - A `sapphire-lifecycles` extension wouldn't need any complex functionality and wouldn't use any library
+  - A `sapphire-net` extension would be different from existing networking libraries and wouldn't use any networking library, but would use a library such as `Squash` to not re-implement serdes
+  - A `sapphire-ecs` or `sapphire-data` extension wouldn't need any new functionality so it would use an existing library like `ECR` or `keyForm` (in order)
 
 # Todo
 - [ ] Set up project
 - [ ] Make basic, extensible module loader
 - [ ] Add pre-built extensions:
-  - [ ] `sapphire_lifecycles` - extra lifecycles for `RunService` and `Players`
-  - [ ] `sapphire_logging` - a nice logging library with a log history
-  - [ ] `sapphire_net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
-  - [ ] `sapphire_data` - batteries included wrapper for an existing data library like `keyForm`
-  - [ ] `sapphire_ecr` - scheduler for ECR with niceties
-  - [ ] `sapphire_jecs` - scheduler for JECS with niceties
+  - [ ] `sapphire-lifecycles` - extra lifecycles for `RunService` and `Players`
+  - [ ] `sapphire-logging` - a nice logging library with a log history
+  - [ ] `sapphire-net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
+  - [ ] `sapphire-data` - batteries included wrapper for an existing data library like `keyForm`
+  - [ ] `sapphire-ecr` - scheduler for ECR with niceties
+  - [ ] `sapphire-jecs` - scheduler for JECS with niceties
 - [ ] Testing
-     
+
 # Note
 Partially inspired by [team-fireworks/ohmyprvd](https://github.com/team-fireworks/ohmyprvd)!
