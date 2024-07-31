@@ -49,11 +49,11 @@ end
 export type spawner<T...> = {
     --- Creates an entity with the given components.
     --- @param ... T...
-    --- @return ecr.entity
+    --- @returns ecr.entity
     spawn: (T...) -> ecr.entity,
     --- Creates an entity with the given components and returns a handle to it.
     --- @param ... T...
-    --- @return ecr.Handle
+    --- @returns ecr.Handle
     spawn_with_handle: (T...) -> ecr.Handle,
 }
 
@@ -64,7 +64,7 @@ local function create_spawner(...)
         local passed = { ... }
         local entity = World.spawn_entity()
 
-        for index, _ in components do
+        for index in components do
             World.registry:add(entity, passed[index])
         end
 
@@ -75,7 +75,7 @@ local function create_spawner(...)
         local passed = { ... }
         local entity = World.spawn_entity_with_handle()
 
-        for index, _ in components do
+        for index in components do
             entity:add(passed[index])
         end
 

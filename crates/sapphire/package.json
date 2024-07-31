@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/sapphire",
-  "version": "0.1.1-ts.1",
+  "version": "0.1.2-ts.1",
   "description": "A lightweight module loader or a batteries included framework",
   "main": "lib/init.luau",
   "types": "lib/index.d.ts",

@@ -16,7 +16,7 @@ declare interface Signal<T> {
 /**
  * Registerable singleton.
  */
-declare interface singleton {
+export interface singleton {
     /**
      * The name of the ModuleScript which holds the singleton. Overwritten by sapphire.
      */
@@ -47,7 +47,7 @@ declare interface singleton {
  * Sapphire extension.
  * Extensions are in their simplest form singletons that are instantly ran.
  */
-declare interface extension {
+export interface extension {
     /**
      * What to identify the extension by.
      */
@@ -145,8 +145,6 @@ declare interface SapphireObject {
 
 declare function sapphire(): SapphireObject;
 
-declare namespace sapphire {
+export namespace sapphire {
     export { SapphireObject as sapphire };
 }
-
-export = sapphire;
