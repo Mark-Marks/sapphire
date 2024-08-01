@@ -26,10 +26,10 @@
         "sapphire_lifecycles": {
           "$path": "crates/sapphire-lifecycles"
         },
-        "sapphire-logging": {
+        "sapphire_logging": {
           "$path": "crates/sapphire-logging"
         },
-        "sapphire-net": {
+        "sapphire_net": {
           "$path": "crates/sapphire-net"
         }
       }

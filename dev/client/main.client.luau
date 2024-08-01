@@ -1,5 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local services = script.Parent.services
+local controllers = script.Parent.controllers
 local extensions = script.Parent.extensions
 
 local sapphire = require(ReplicatedStorage.Packages.sapphire)()
@@ -21,9 +21,4 @@ sapphire.signals.on_singleton_started:Connect(function(singleton)
     print(`Started singleton {singleton.identifier}`)
 end)
 
-sapphire
-    :use(require(extensions.heartbeat_lifecycle))
-    :use(sapphire_net)
-    :register_singleton(services.a)
-    :register_singletons(services)
-    :start()
+sapphire:use(require(extensions.heartbeat_lifecycle)):use(sapphire_net):register_singletons(controllers):start()

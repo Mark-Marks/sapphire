@@ -16,3 +16,4 @@ include = [
 
 [dependencies]
 squash = "data-oriented-house/squash@2.3.2"
+signal = "red-blox/signal@2.0.2"
