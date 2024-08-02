@@ -22,8 +22,8 @@ sapphire.signals.on_singleton_started:Connect(function(singleton)
 end)
 
 sapphire
-    :use(require(extensions.heartbeat_lifecycle))
     :use(sapphire_net)
+    :use(require(extensions.heartbeat_lifecycle))
     :register_singleton(services.a)
     :register_singletons(services)
     :start()

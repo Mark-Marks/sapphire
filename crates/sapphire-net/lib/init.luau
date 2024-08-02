@@ -406,6 +406,7 @@ local function construct_defined(props: types.packet_props<any>, packet_id: numb
             ser(cursor, data)
             packet_id_ser(cursor, packet_id)
             local buf = squash.tobuffer(cursor)
+            print(buf)
             for _, player in Players:GetPlayers() do
                 fire_client(player, buf)
             end
@@ -551,14 +552,17 @@ end
 
 local function create_undefined(name: string, reliability_type: reliability_type)
     local undefined_packets = undefined_replicator.read() :: undefined_packets
+    local packet_id = 0
+    if undefined_packets[name] and run_context == "client" then
+        packet_id = undefined_packets[name]
+    else
+        unique_id += 1
+        packet_id = unique_id
 
-    unique_id += 1
-    local packet_id = unique_id
-
-    if run_context == "server" then
         undefined_packets[name] = packet_id
         undefined_replicator.write(undefined_packets)
     end
+
     readers[packet_id] = "dynamic" :: any
 
     if reliability_type == "reliable" then
@@ -574,21 +578,24 @@ end
 
 -- RUN CONTEXT SPECIFIC HANDLERS
 
+-- This behaviour is too critical
+if run_context == "server" then
+end
+
 local function extension()
     if run_context == "server" then
-        local function player_added(player: Player)
-            outgoing_server[player] = squash.cursor(fresh_channel_size)
-        end
-
         local function player_removing(player: Player)
             outgoing_server[player] = nil
         end
 
-        Players.PlayerAdded:Connect(player_added)
+        Players.PlayerAdded:Connect(function(player)
+            outgoing_server[player] = squash.cursor(fresh_channel_size)
+            print("playeradded")
+        end)
         Players.PlayerRemoving:Connect(player_removing)
 
         for _, player in Players:GetPlayers() do
-            player_added(player)
+            outgoing_server[player] = squash.cursor(fresh_channel_size)
         end
 
         local function replicate()
@@ -602,7 +609,7 @@ local function extension()
                 local buf = squash.tobuffer(cursor)
                 reliable_remote:FireClient(player, buf)
 
-                cursor = squash.cursor(fresh_channel_size)
+                outgoing_server[player] = squash.cursor(fresh_channel_size)
             end
         end
 
@@ -624,7 +631,7 @@ local function extension()
             end
 
             if reader == ("dynamic") :: any then
-                local data = dynamic_deserialize(buf)
+                local data = dynamic_deserialize(squash.tobuffer(cursor))
                 signal:Fire(data, player)
                 push(queue, { data, player })
                 return
@@ -651,7 +658,7 @@ local function extension()
             end
 
             if reader == ("dynamic") :: any then
-                local data = dynamic_deserialize(buf)
+                local data = dynamic_deserialize(squash.tobuffer(cursor))
                 signal:Fire(data, player)
                 push(queue, { data, player })
                 return
@@ -693,7 +700,7 @@ local function extension()
             end
 
             if reader == ("dynamic") :: any then
-                local data = dynamic_deserialize(buf)
+                local data = dynamic_deserialize(squash.tobuffer(cursor))
                 signal:Fire(data)
                 push(queue, data)
                 return
@@ -716,7 +723,7 @@ local function extension()
             end
 
             if reader == ("dynamic") :: any then
-                local data = dynamic_deserialize(buf)
+                local data = dynamic_deserialize(squash.tobuffer(cursor))
                 signal:Fire(data)
                 push(queue, data)
                 return

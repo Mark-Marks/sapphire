@@ -21,4 +21,4 @@ sapphire.signals.on_singleton_started:Connect(function(singleton)
     print(`Started singleton {singleton.identifier}`)
 end)
 
-sapphire:use(require(extensions.heartbeat_lifecycle)):use(sapphire_net):register_singletons(controllers):start()
+sapphire:use(sapphire_net):use(require(extensions.heartbeat_lifecycle)):register_singletons(controllers):start()

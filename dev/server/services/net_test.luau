@@ -1,4 +1,5 @@
 --!strict
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local events = require(ReplicatedStorage.events)
@@ -33,19 +34,22 @@ function NetTest.start()
     reliable_event.listen(print_person)
     unreliable_event.listen(print_person)
 
-    for _ = 1, 1_000 do
-        debug.profilebegin("[Server] Sending 4 static events")
-        events.test_namespace.reliable_test_event.send_to_all(fuzz.fuzz_person())
-        events.test_namespace.unreliable_test_event.send_to_all(fuzz.fuzz_person())
-        events.test_namespace_two.reliable_test_event.send_to_all(fuzz.fuzz_person())
-        events.test_namespace_two.unreliable_test_event.send_to_all(fuzz.fuzz_person())
-        debug.profileend()
+    Players.PlayerAdded:Connect(function(player)
+        print("fuck you i ran before you")
+        for _ = 1, 1 do
+            debug.profilebegin("[Server] Sending 4 static events")
+            events.test_namespace.reliable_test_event.send_to(player, fuzz.fuzz_person())
+            events.test_namespace.unreliable_test_event.send_to(player, fuzz.fuzz_person())
+            events.test_namespace_two.reliable_test_event.send_to(player, fuzz.fuzz_person())
+            events.test_namespace_two.unreliable_test_event.send_to(player, fuzz.fuzz_person())
+            debug.profileend()
 
-        debug.profilebegin("[Server] Sending 2 dynamic events")
-        reliable_event.send_to_all(fuzz.fuzz_person())
-        unreliable_event.send_to_all(fuzz.fuzz_person())
-        debug.profileend()
-    end
+            debug.profilebegin("[Server] Sending 2 dynamic events")
+            reliable_event.send_to(player, fuzz.fuzz_person())
+            unreliable_event.send_to(player, fuzz.fuzz_person())
+            debug.profileend()
+        end
+    end)
 
     task.wait(15)
     print(`[Server] Total receive count: {receive_count}`)

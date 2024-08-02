@@ -32,7 +32,7 @@ function NetTest.start()
     reliable_event.listen(print_person)
     unreliable_event.listen(print_person)
 
-    for _ = 1, 1_000 do
+    for _ = 1, 1 do
         debug.profilebegin("[Client] Sending 4 static events")
         events.test_namespace.reliable_test_event.send(fuzz.fuzz_person())
         events.test_namespace.unreliable_test_event.send(fuzz.fuzz_person())
