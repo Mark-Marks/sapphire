@@ -1,0 +1,24 @@
+{
+  "name": "@rbxts/sapphire-net",
+  "version": "0.1.0-ts.1",
+  "description": "An optimized networking library for sapphire",
+  "main": "lib/init.luau",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mark-Marks/sapphire.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mark-Marks",
+  "license": "MIT",
+  "homepage": "https://github.com/Mark-Marks/sapphire#readme",
+  "dependencies": {
+    "@rbxts/sapphire": "^0.1.2-ts.1",
+    "@rbxts/squash": "^2.3.2-ts.0"
+  }
+}

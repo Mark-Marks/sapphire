@@ -34,9 +34,10 @@ function NetTest.start()
     reliable_event.listen(print_person)
     unreliable_event.listen(print_person)
 
-    Players.PlayerAdded:Connect(function(player)
-        print("fuck you i ran before you")
-        for _ = 1, 1 do
+    events.test_namespace.loaded.listen(function(_, player)
+        assert(player, "where player")
+        print("Player loaded in")
+        for _ = 1, 1_000 do
             debug.profilebegin("[Server] Sending 4 static events")
             events.test_namespace.reliable_test_event.send_to(player, fuzz.fuzz_person())
             events.test_namespace.unreliable_test_event.send_to(player, fuzz.fuzz_person())
@@ -51,27 +52,27 @@ function NetTest.start()
         end
     end)
 
-    task.wait(15)
+    task.wait(5)
     print(`[Server] Total receive count: {receive_count}`)
 end
 
 function NetTest.on_heartbeat(delta_time: number)
-    for _, data, player in events.test_namespace.reliable_test_event.next() do
+    for _, data, player in events.test_namespace.reliable_test_event.poll() do
         print_person(data, player)
     end
-    for _, data, player in events.test_namespace.unreliable_test_event.next() do
+    for _, data, player in events.test_namespace.unreliable_test_event.poll() do
         print_person(data, player)
     end
-    for _, data, player in events.test_namespace_two.reliable_test_event.next() do
+    for _, data, player in events.test_namespace_two.reliable_test_event.poll() do
         print_person(data, player)
     end
-    for _, data, player in events.test_namespace_two.unreliable_test_event.next() do
+    for _, data, player in events.test_namespace_two.unreliable_test_event.poll() do
         print_person(data, player)
     end
-    for _, data, player in reliable_event.next() do
+    for _, data, player in reliable_event.poll() do
         print_person(data, player)
     end
-    for _, data, player in unreliable_event.next() do
+    for _, data, player in unreliable_event.poll() do
         print_person(data, player)
     end
 end

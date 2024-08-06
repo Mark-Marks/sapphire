@@ -24,6 +24,9 @@ local function print_person(person: fuzz.person)
 end
 
 function NetTest.start()
+    events.test_namespace.loaded.send(true)
+    print("sent loaded")
+
     events.test_namespace.reliable_test_event.listen(print_person)
     events.test_namespace.unreliable_test_event.listen(print_person)
     events.test_namespace_two.reliable_test_event.listen(print_person)
@@ -32,7 +35,7 @@ function NetTest.start()
     reliable_event.listen(print_person)
     unreliable_event.listen(print_person)
 
-    for _ = 1, 1 do
+    for _ = 1, 1_000 do
         debug.profilebegin("[Client] Sending 4 static events")
         events.test_namespace.reliable_test_event.send(fuzz.fuzz_person())
         events.test_namespace.unreliable_test_event.send(fuzz.fuzz_person())
@@ -46,27 +49,27 @@ function NetTest.start()
         debug.profileend()
     end
 
-    task.wait(15)
+    task.wait(5)
     print(`[Client] Total receive count: {receive_count}`)
 end
 
 function NetTest.on_heartbeat(delta_time: number)
-    for _, data in events.test_namespace.reliable_test_event.next() do
+    for _, data in events.test_namespace.reliable_test_event.poll() do
         print_person(data)
     end
-    for _, data in events.test_namespace.unreliable_test_event.next() do
+    for _, data in events.test_namespace.unreliable_test_event.poll() do
         print_person(data)
     end
-    for _, data in events.test_namespace_two.reliable_test_event.next() do
+    for _, data in events.test_namespace_two.reliable_test_event.poll() do
         print_person(data)
     end
-    for _, data in events.test_namespace_two.unreliable_test_event.next() do
+    for _, data in events.test_namespace_two.unreliable_test_event.poll() do
         print_person(data)
     end
-    for _, data in reliable_event.next() do
+    for _, data in reliable_event.poll() do
         print_person(data)
     end
-    for _, data in unreliable_event.next() do
+    for _, data in unreliable_event.poll() do
         print_person(data)
     end
 end

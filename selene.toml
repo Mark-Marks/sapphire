@@ -7,4 +7,11 @@ exclude = [
     "crates/sapphire-lifecycles/Packages",
     "crates/sapphire-logging/Packages",
     "crates/sapphire-net/Packages",
+    "crates/sapphire/node_modules",
+    "crates/sapphire-data/node_modules",
+    "crates/sapphire-ecr/node_modules",
+    "crates/sapphire-jecs/node_modules",
+    "crates/sapphire-lifecycles/node_modules",
+    "crates/sapphire-logging/node_modules",
+    "crates/sapphire-net/node_modules",
 ]

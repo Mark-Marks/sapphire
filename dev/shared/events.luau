@@ -23,6 +23,9 @@ return {
                 }),
                 reliability_type = "unreliable",
             }),
+            loaded = sapphire_net.defined({
+                value = t.boolean(),
+            }),
         }
     end),
     test_namespace_two = sapphire_net.define_namespace("test_namespace_two", function()
