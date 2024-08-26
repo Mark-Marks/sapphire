@@ -1,88 +1,54 @@
 # sapphire
 A lightweight module loader or a batteries included framework
 
-# Installation
-Add `sapphire` to your `wally.toml`:
-```toml
-sapphire = "mark-marks/sapphire@LATEST" # change LATEST to latest version
-```
-
-# Vision
-- A simple, short module loader that can be extended into a fully fledged framework taking care of networking, logging, data, ECS system scheduling, etc.
-- roblox-ts support
-- By default can be as simple as:
-```luau
-local sapphire = require("@packages/sapphire")
-local singletons = ...
-
-sapphire()
-    :add_singletons(singletons)
-    :start()
-```
-- Singletons don't have to require sapphire itself for anything:
-```luau
-local singleton = {}
-
-function singleton.start()
-end
-
-return singleton
-```
-- Singletons can have priority by specifying an optional `priority` property:
-```luau
-local singleton = {}
-singleton.priority = 1234 -- 1 is the lowest priority
-```
-- Doesn't use any custom module loaders, depends on `require()` to not sacrifice types:
-```luau
-local dependency = require("@singletons/dependency")
-```
-- Can be extended with `.use()`, which instantly runs a singleton that can add extra functionality:
-```luau
-export type extension = {
-    --- What to identify the extension by.
-    identifier: string,
-
-    --- Starts the extension. This is called prior to any methods being registered.
-    --- @param sapphire sapphire
-    extension: (sapphire: sapphire) -> (),
-
-    --- Registers the given methods within sapphire.
-    --- ```luau
-    --- local function on_heartbeat(singleton_method: (delta_time: number) -> ())
-    ---     heartbeat_signal:Connect(singleton_method)
-    --- end
-    --- ```
-    methods: { [string]: (singleton_method: (any) -> ()) -> () }?,
-
-    [string]: any,
-}
-```
-```luau
-local sapphire_lifecycles = require("@packages/sapphire-lifecycles")
-local sapphire_net = require("@packages/sapphire-net")
-
-sapphire()
-    :use(sapphire_lifecycles) -- Adds extra lifecycles
-    :use(sapphire_net) -- Initializes the networking library
--- Extensions are ran instantly! `sapphire_net` can use a `.heartbeat()` lifecycle if `sapphire_lifecycles` adds it, but also `sapphire_lifecycles` can't use any features from `sapphire_net`
-```
-- If an extension needs complex functionality and doesn't need custom functionality or functionality that doesn't exist, it should use an existing libary. For example:
-  - A `sapphire-lifecycles` extension wouldn't need any complex functionality and wouldn't use any library
-  - A `sapphire-net` extension would be different from existing networking libraries and wouldn't use any networking library, but would use a library such as `Squash` to not re-implement serdes
-  - A `sapphire-ecs` or `sapphire-data` extension wouldn't need any new functionality so it would use an existing library like `ECR` or `keyForm` (in order)
+> [!CAUTION]
+> Here be dragons! Sapphire and its extensions are barely tested and in alpha
 
 # Todo
 - [x] Set up project
 - [x] Make basic, extensible module loader
 - [ ] Add pre-built extensions:
-  - [ ] `sapphire-lifecycles` - extra lifecycles for `RunService` and `Players`
+  - [x] `sapphire-lifecycles` - extra lifecycles for `RunService` and `Players`
   - [ ] `sapphire-logging` - a nice logging library with a log history
   - [x] `sapphire-net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
-  - [ ] `sapphire-data` - batteries included wrapper for an existing data library like `keyForm`
-  - [ ] `sapphire-ecr` - scheduler for ECR with niceties -- in progress
+  - [x] `sapphire-data` - batteries included wrapper for an existing data library like `keyForm`
+  - [x] `sapphire-ecr` - scheduler for ECR with niceties
   - [ ] `sapphire-jecs` - scheduler for JECS with niceties
-- [ ] Testing
 
-# Note
-Partially inspired by [team-fireworks/ohmyprvd](https://github.com/team-fireworks/ohmyprvd)!
+# Notes
+- Partially inspired by [prvdmwrong/prvdmwrong](https://github.com/prvdmwrong/prvdmwrong)!
+- Dependency injection doesn't exist because it can be implemented as an extension.
+- Typescript support is half assed at best and non existent at worst, feel free to PR good types in and I'll accept them.
+- Sapphire and all of its extensions are licensed under [the MIT license](https://opensource.org/license/mit).
+- Sapphire and all of its extensions are strictly typed.
+- Sapphire is built around decoupling singletons from itself - you don't have to require sapphire in singletons to do anything.
+> [!IMPORTANT]
+> [JohnnyMorganz/wally-package-types](https://github.com/JohnnyMorganz/wally-package-types) or a package manager which exports types **NEEDS** to be used to get good type support for extensions. All extensions with dependencies rely on them to have exported types.
+
+# Styling guide
+There is none, although sapphire tries its best to follow snake_case.
+
+# Documentation
+
+A documentation website doesn't exist yet, although some form of it can be viewed in extension READMEs:
+
+## sapphire
+[sapphire/README.md](/crates/sapphire/README.md)
+
+## sapphire-lifecycles
+[sapphire-lifecycles/README.md](/crates/sapphire-lifecycles/README.md)
+
+## sapphire-logging
+[sapphire-logging/README.md](/crates/sapphire-logging/README.md)
+
+# sapphire-net
+[sapphire-net/README.md](/crates/sapphire-net/README.md)
+
+# sapphire-data
+[sapphire-data/README.md](/crates/sapphire-data/README.md)
+
+# sapphire-ecr
+[sapphire-ecr/README.md](/crates/sapphire-ecr/README.md)
+
+# sapphire-jecs
+[sapphire-jecs/README.md](/crates/sapphire-jecs/README.md)

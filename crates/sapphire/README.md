@@ -1,69 +1,184 @@
 # sapphire
 A lightweight module loader or a batteries included framework
 
-# Vision
-- A simple, short module loader that can be extended into a fully fledged framework taking care of networking, logging, data, ECS system scheduling, etc.
-- roblox-ts support
-- By default can be as simple as:
-```luau
-local sapphire = require("@packages/sapphire")
-local singletons = ...
+# API
 
-sapphire()
-    .add_singletons(singletons)
-    .start()
-```
-- Singletons don't have to require sapphire itself for anything:
-```luau
-local singleton = {}
+## Types
 
-function singleton.start()
-end
+### SignalNode<T...>
+```luau
+PRIVATE type SignalNode<T...> = {
+    Next: SignalNode<T...>?,
+    Callback: (T...) -> (),
+}
+```
 
-return singleton
-```
-- Singletons can have priority by specifying an optional `priority` property:
+### Signal<T...>
+[red-blox/signal](https://github.com/red-blox/Util/blob/main/libs/Signal/Signal.luau) signal type.
 ```luau
-local singleton = {}
-singleton.priority = 1234
+type Signal<T...> = {
+    Root: SignalNode<T...>?,
+
+    Connect: (self: Signal<T...>, Callback: (T...) -> ()) -> () -> (),
+    Wait: (self: Signal<T...>) -> T...,
+    Once: (self: Signal<T...>, Callback: (T...) -> ()) -> (),
+    Fire: (self: Signal<T...>, T...) -> (),
+    DisconnectAll: (self: Signal<T...>) -> (),
+}
 ```
-- Doesn't use any custom module loaders, depends on `require()` to not sacrifice types:
+
+### singleton
+Registerable singleton.
 ```luau
-local dependency = require("@singletons/dependency")
+type singleton = {
+    --- The name of the ModuleScript which holds the singleton. Overwritten by sapphire.
+    identifier: string?,
+    --- Any singleton without priority will automatically have its priority set to 1, where 1 is the lowest priority.
+    priority: number?,
+
+    --- Initializes the singleton.
+    --- Called prior to all singletons being started and their lifecycles ran.
+    --- `.start()` should be preferred unless you need `.init()`'s unique behaviour.
+    init: (() -> ())?,
+    --- Starts the singleton.
+    --- Called after all singletons are initialized, but before other lifecycles are ran.
+    --- This is called in another thread and can yield.
+    start: (() -> ())?,
+
+    [string]: any,
+}
 ```
-- Can be extended with `.use()`, which instantly runs a singleton that can add extra functionality:
+
+### extension
+Extensions are in their simplest form singletons that are instantly ran.
 ```luau
 type extension = {
-    start: (sapphire) -> (), -- extensions' `.start()` lifecycle is additionally called with the framework itself
-    lifecycles: { [string]: () -> () }, -- to add extra lifecycles to singletons
+    --- What to identify the extension by.
+    identifier: string,
+
+    --- Starts the extension. This is called prior to any methods being registered.
+    extension: (sapphire: sapphire) -> (),
+
+    --- Registers the given methods within sapphire.
+    methods: { [string]: (singleton: singleton) -> () },
+
+    [string]: any,
 }
-type use = (extension) -> builder
 ```
+
+### sapphire
 ```luau
-local sapphire_lifecycles = require("@packages/sapphire_lifecycles")
-local sapphire_net = require("@packages/sapphire_net")
+type sapphire = {
+    signals = {
+        on_extension_registerd: Signal<extension>,
+        on_singleton_registered: Signal<singleton>,
+        on_singleton_initialized: Signal<singleton>,
+        on_singleton_started: Signal<singleton>,
+    },
 
-sapphire()
-    .use(sapphire_lifecycles) -- Adds extra lifecycles
-    .use(sapphire_net) -- Initializes the networking library
--- Extensions are ran instantly! `sapphire_net` can use a `.heartbeat()` lifecycle if `sapphire_lifecycles` adds it, but also `sapphire_lifecycles` can't use any features from `sapphire_net`
+    _singletons: { [string]: singleton },
+    _extensions: { [string]: extension },
+    _extra_methods: { [string]: (singleton: singleton) -> () },
+
+    use: (self: sapphire, extension: extension) -> sapphire,
+    register_singleton: (self: sapphire, mod: ModuleScript) -> sapphire,
+    register_singletons: (self: sapphire, container: Folder) -> sapphire,
+    start: (self: sapphire) -> (),
+}
 ```
-- If an extension needs complex functionality and doesn't need custom functionality or functionality that doesn't exist, it should use an existing libary. For example:
-  - A `sapphire_lifecycles` extension wouldn't need any complex functionality and wouldn't use any library
-  - A `sapphire_net` extension would be different from existing networking libraries and wouldn't use any networking library, but would use a library such as `Squash` to not re-implement serdes
-  - A `sapphire_ecs` or `sapphire_data` extension wouldn't need any new functionality so it would use an existing library like `ECR` or `keyForm` (in order)
 
-# Todo
-- [ ] Set up project
-- [ ] Make basic, extensible module loader
-- [ ] Add pre-built extensions:
-  - [ ] `sapphire_lifecycles` - extra lifecycles for `RunService` and `Players`
-  - [ ] `sapphire_logging` - a nice logging library with a log history
-  - [ ] `sapphire_net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
-  - [ ] `sapphire_data` - batteries included wrapper for an existing data library like `keyForm`
-  - [ ] `sapphire_ecr` - scheduler for ECR with niceties
-  - [ ] `sapphire_jecs` - scheduler for JECS with niceties
-- [ ] Testing
+## Registered methods
 
-# Note
-Partially inspired by [team-fireworks/ohmyprvd](https://github.com/team-fireworks/ohmyprvd)!
+### .init()
+> [!TIP]
+> `.init()` and `.start()` are optional, singletons can exist without them.
+Called before singletons are started.
+Yielding here yields everything else.
+```luau
+() -> ()
+```
+
+### .start()
+> [!TIP]
+> `.init()` and `.start()` are optional, singletons can exist without them.
+Spawned with `task.spawn` after all singletons are initialized.
+```luau
+() -> ()
+```
+
+## Note
+> [!NOTE]
+> Sapphire returns a function which is used to construct it.
+> ```luau
+> () -> sapphire
+> ```
+> All of the following exports and function definitions are of what's returned by the constructor.
+
+## Exports
+
+### .signals
+List of signals ran during certain stages.
+```luau
+{
+    -- Runs after an extension is registered.
+    on_extension_registered: Signal<extension>,
+    --- Runs after a singleton is registered.
+    on_singleton_registered: Signal<singleton>,
+    --- Runs after a singleton is initialized.
+    on_singleton_initialized: Signal<singleton>,
+    --- Runs after a singleton is started.
+    on_singleton_started: Signal<singleton>,
+}
+```
+
+### ._singletons
+Readonly map of identifiers to registered singletons.
+> [!WARNING]
+> Use `:register_singleton()` or `:register_singletons()` instead of editing directly.
+
+### ._extensions
+Readonly map of identifiers to registered extensions.
+> [!WARNING]
+> Use `:use()` instead of editing directly.
+
+### .extra_methods
+Readonly array of registered extended methods.
+> [!WARNING]
+> Use an extension instead of editing directly.
+
+## Functions
+
+### :use()
+Uses an extension.
+```luau
+(
+    self: sapphire,
+    extension: extension
+) -> sapphire
+```
+
+### :register_singleton()
+Registers a singleton.
+```luau
+(
+    self: sapphire,
+    mod: ModuleScript
+) -> sapphire
+```
+
+### :register_singletons()
+Registers multiple singletons parented to a container - wrapper around `:register_singleton()`.
+```luau
+(
+    self: sapphire,
+    container: Folder
+) -> sapphire
+```
+
+### :start()
+Starts all singletons.
+```luau
+(
+    self: sapphire
+) -> ()
+```
