@@ -4,7 +4,7 @@ A lightweight module loader or a batteries included framework
 > [!CAUTION]
 > Here be dragons! Sapphire and its extensions are barely tested and in alpha
 
-# Todo
+## Todo
 - [x] Set up project
 - [x] Make basic, extensible module loader
 - [ ] Add pre-built extensions:
@@ -15,7 +15,7 @@ A lightweight module loader or a batteries included framework
   - [x] `sapphire-ecr` - scheduler for ECR with niceties
   - [ ] `sapphire-jecs` - scheduler for JECS with niceties
 
-# Notes
+## Notes
 - Partially inspired by [prvdmwrong/prvdmwrong](https://github.com/prvdmwrong/prvdmwrong)!
 - Dependency injection doesn't exist because it can be implemented as an extension.
 - Typescript support is half assed at best and non existent at worst, feel free to PR good types in and I'll accept them.
@@ -25,30 +25,30 @@ A lightweight module loader or a batteries included framework
 > [!IMPORTANT]
 > [JohnnyMorganz/wally-package-types](https://github.com/JohnnyMorganz/wally-package-types) or a package manager which exports types **NEEDS** to be used to get good type support for extensions. All extensions with dependencies rely on them to have exported types.
 
-# Styling guide
+## Styling guide
 There is none, although sapphire tries its best to follow snake_case.
 
-# Documentation
+## Documentation
 
 A documentation website doesn't exist yet, although some form of it can be viewed in extension READMEs:
 
-## sapphire
+### sapphire
 [sapphire/README.md](/crates/sapphire/README.md)
 
-## sapphire-lifecycles
+### sapphire-lifecycles
 [sapphire-lifecycles/README.md](/crates/sapphire-lifecycles/README.md)
 
-## sapphire-logging
+### sapphire-logging
 [sapphire-logging/README.md](/crates/sapphire-logging/README.md)
 
-# sapphire-net
+### sapphire-net
 [sapphire-net/README.md](/crates/sapphire-net/README.md)
 
-# sapphire-data
+### sapphire-data
 [sapphire-data/README.md](/crates/sapphire-data/README.md)
 
-# sapphire-ecr
+### sapphire-ecr
 [sapphire-ecr/README.md](/crates/sapphire-ecr/README.md)
 
-# sapphire-jecs
+### sapphire-jecs
 [sapphire-jecs/README.md](/crates/sapphire-jecs/README.md)
