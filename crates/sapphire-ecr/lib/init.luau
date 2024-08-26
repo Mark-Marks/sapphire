@@ -95,7 +95,7 @@ end
 --- ```luau
 --- local spawner = sapphire_ecr.create_spawner(components.part, components.velocity, components.position)
 --- for _ = 1, 1000 do
----     spawner.spawn(part_template:Clone(), Vector3.new(0, 0, 0), Vector3.new(0, 0, 0))
+---     spawner.spawn(part_template:Clone(), Vector3.zero, Vector3.zero)
 --- end
 --- ```
 --- @param ... T... -- Components to use.
@@ -104,7 +104,7 @@ function SapphireEcr.create_spawner<T...>(...: T...): spawner<T...>
     return create_spawner(...)
 end
 
---- Creates an entity and returns it's id.
+--- Creates an entity and returns its id.
 --- @return ecr.entity
 function SapphireEcr.spawn_entity(): ecr.entity
     return SapphireEcr.registry:create()
@@ -148,7 +148,7 @@ export type raw_data = {
 ---
 --- function singleton.system()
 ---     return function()
----         for _, difference in data_replication_event.poll()
+---         for _, difference in data_replication_event.poll() do
 ---             replicator.apply_difference(difference)
 ---         end
 ---     end
@@ -227,7 +227,7 @@ export type replicator = {
 ---
 --- function singleton.system()
 ---     return function()
----         for _, difference in data_replication_event.poll()
+---         for _, difference in data_replication_event.poll() do
 ---             replicator.apply_difference(difference)
 ---         end
 ---     end
