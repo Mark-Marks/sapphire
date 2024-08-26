@@ -5,13 +5,9 @@
   alt="sapphire"
   width="500px"/>
 
-<br/>
-
-[![Continuous Integration](https://img.shields.io/github/actions/workflow/status/mark-marks/sapphire/ci.yml?style=flat-square&label=Continuous%20Integration)](https://github.com/mark-marks/sapphire/actions/workflows/ci.yml)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](https://github.com/Mark-Marks/sapphire/blob/main/LICENSE)
-[![Wally](https://img.shields.io/github/v/tag/mark-marks/sapphire?&style=flat-square)](https://wally.run/package/mark-marks/sapphire)
-</br>
-
+[![Continuous Integration](https://img.shields.io/github/actions/workflow/status/mark-marks/sapphire/ci.yml?style=for-the-badge&label=Continuous%20Integration)](https://github.com/mark-marks/sapphire/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://github.com/Mark-Marks/sapphire/blob/main/LICENSE)
+[![Wally](https://img.shields.io/github/v/tag/mark-marks/sapphire?&style=for-the-badge)](https://wally.run/package/mark-marks/sapphire)
 
 A lightweight module loader or a batteries included framework
 
