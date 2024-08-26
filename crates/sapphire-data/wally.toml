@@ -17,3 +17,4 @@ include = [
 [dependencies]
 keyform = "ffrostflame/keyform@0.2.2"
 signal = "red-blox/signal@2.0.2"
+delta_compress = "nezuo/delta-compress@0.1.3"
