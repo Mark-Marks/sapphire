@@ -49,4 +49,12 @@ return {
             }),
         }
     end),
+    data_replication = sapphire_net.define_namespace("data_replication", function()
+        return {
+            ecr_registry = sapphire_net.defined({
+                value = t.map(t.uint(4), t.map(t.uint(4), t.unknown())),
+                reliability_type = "reliable",
+            }),
+        }
+    end),
 }

@@ -555,6 +555,36 @@ type data_types = {
     --- Represents a `Vector3int16`.
     --- @return Vector3int16
     Vector3int16: () -> Vector3int16,
+    --- Represents an `Instance`.\
+    --- Instance might be nil if a reference to one doesn't exist.
+    --- @return Instance?
+    Instance: () -> Instance?,
+    --- Represents `unknown`.\
+    --- Unknown data is dynamically serialized with buffers. It will take way more space than statically defined data, but it will still be less than just sending it over the network.
+    --- @return unknown
+    unknown: () -> unknown,
+    --- Represents `nil`.
+    --- @return nil
+    ["nil"]: () -> nil,
+    --- Literals are individual values that can be enumerated and distinguished using just `u1`s. This is useful for encoding enums of names, orientations, and other unique identifiers with minimal data.
+    --- ```luau
+    --- local literal = Squash.literal("a", 2, "c", true, "e")
+    ---
+    --- local cursor = Squash.cursor()
+    --- literal.ser(cursor, "c")
+    --- Squash.print(cursor)
+    --- -- Pos: 1 / 8
+    --- -- Buf: { 2 0 0 0 0 0 0 0 }
+    --- --          ^
+    --- local buf = Squash.tobuffer(cursor)
+    ---
+    --- local cursor = Squash.frombuffer(buf)
+    --- print(literal.des(cursor))
+    --- -- "c"
+    --- ```
+    --- @param ... T...
+    --- @return T...
+    literal: <T...>(T...) -> T...,
     --- # Using Base Conversion
     --- There are many ways to compress serialized strings, a lossless approach is to treat the string itself as a number and convert the number into a higher base, or radix. This is called [base conversion](https://en.wikipedia.org/wiki/Radix). Strings come in many different *flavors* though, so we need to know how to serialize each *flavor*. Each string is composed of a sequence of certain characters. The set of those certain characters is called that string's smallest **Alphabet**. For example, the string **"Hello, World!"** has the alphabet **"!,HWdelorw"**. We can assign a number to each character in the alphabet like its position in the string. With our example:
     --- ```luau

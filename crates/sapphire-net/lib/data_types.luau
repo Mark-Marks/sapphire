@@ -2,8 +2,151 @@
 --!native
 --!optimize 2
 local squash = require(script.Parent.Parent.squash)
+local exports: any
 
-return table.freeze({
+export type channel = squash.Cursor & {
+    references: { Instance },
+}
+
+export type serdes<T> = {
+    ser: (channel: channel, value: T) -> (),
+    des: (channel: channel) -> T,
+}
+
+local function sum<T>(x: T): number
+    local n = 0
+    for _ in x :: any do
+        n += 1
+    end
+    return n
+end
+
+local function write_reference(references: { Instance }, instance: Instance): number
+    local id = #references + 1
+    references[id] = instance
+    return id
+end
+
+local _vlq_serdes = squash.vlq()
+local vlq_ser = _vlq_serdes.ser
+local vlq_des = _vlq_serdes.des
+
+local instance_cache = {
+    ser = function(channel: channel, value: Instance)
+        local ref = write_reference(channel.references, value)
+        vlq_ser(channel, ref)
+    end,
+    des = function(channel: channel): Instance?
+        local refs = channel.references
+        if not refs then
+            return nil
+        end
+
+        local id = vlq_des(channel)
+        local ref = refs[id]
+
+        if typeof(ref) == "Instance" then
+            return ref
+        end
+        return nil
+    end,
+}
+
+local function instance_serdes(): serdes<Instance?>
+    return instance_cache :: any
+end
+
+local nil_cache: serdes<nil> = {
+    ser = function() end,
+    des = function(): nil
+        return nil
+    end,
+}
+
+local function nil_serdes(): serdes<nil>
+    return nil_cache
+end
+
+local _u8_serdes = squash.uint(1)
+local u8_ser = _u8_serdes.ser
+local u8_des = _u8_serdes.des
+
+-- !! unfortunately, squash treats cursors like a stack
+-- this means that data has to be written backwards so it can be read normally;
+-- instead of doing | type | | data | we have to do | data | | type |
+-- also has to store the length of tables so the packet id serdes upvalues will be used
+
+local function unknown_serialize(channel: channel, value: unknown)
+    local type_to_id_lookup = exports.type_to_id
+    local data_serdes = exports.types
+
+    local data_type = typeof(value)
+    if data_type ~= "table" then
+        data_serdes[data_type]().ser(channel, value)
+        u8_ser(channel, type_to_id_lookup[data_type])
+        return
+    end
+
+    for k, v in value :: { [unknown]: unknown } do
+        unknown_serialize(channel, v)
+        unknown_serialize(channel, k)
+    end
+    vlq_ser(channel, sum(value))
+    u8_ser(channel, type_to_id_lookup["table"])
+end
+
+local function unknown_deserialize(channel: channel): unknown
+    local id_to_type_lookup = exports.id_to_type
+    local data_serdes = exports.types
+
+    local data_type = id_to_type_lookup[u8_des(channel)]
+    if data_type == nil then
+        return nil
+    end
+    if data_type ~= "table" then
+        return data_serdes[data_type]().des(channel)
+    end
+
+    local n = vlq_des(channel)
+
+    local reconstructed = {}
+
+    for _ = 1, n do
+        local k = unknown_deserialize(channel)
+        local v = unknown_deserialize(channel)
+        reconstructed[k] = v
+    end
+
+    return reconstructed
+end
+
+local unknown_cache = {
+    ser = unknown_serialize,
+    des = unknown_deserialize,
+}
+
+local function unknown_serdes(): serdes<unknown>
+    return unknown_cache
+end
+
+local function create_channel(size: number): channel
+    return {
+        Buf = buffer.create(size),
+        Pos = 0,
+        references = {},
+    }
+end
+
+local function create_channel_from_buffer(buf: buffer): channel
+    local cursor = squash.frombuffer(buf)
+    return {
+        Buf = cursor.Buf,
+        Pos = cursor.Pos,
+        references = {},
+    }
+end
+
+exports = table.freeze({
     types = table.freeze({
         boolean = squash.boolean,
         uint = squash.uint,
@@ -80,6 +223,10 @@ return table.freeze({
         end,
         Vector2int16 = squash.Vector2int16,
         Vector3int16 = squash.Vector3int16,
+        ["Instance"] = instance_serdes,
+        unknown = unknown_serdes,
+        ["nil"] = nil_serdes,
+        literal = squash.literal,
         base_conversion = table.freeze({
             alphabet = squash.string.alphabet,
             convert = squash.string.convert,
@@ -144,7 +291,10 @@ return table.freeze({
         [43] = "UDim2",
         [44] = "Vector2int16",
         [45] = "Vector3int16",
-        [46] = "EOF", -- End Of File
+        [46] = "Instance",
+        [47] = "nil",
+        [48] = "literal",
+        [49] = "EOF", -- End Of File
     }),
     type_to_id = table.freeze({
         boolean = 1,
@@ -192,6 +342,19 @@ return table.freeze({
         UDim2 = 43,
         Vector2int16 = 44,
         Vector3int16 = 45,
-        EOF = 46, -- End Of File
+        Instance = 46,
+        ["nil"] = 47,
+        literal = 48,
+        EOF = 49, -- End Of File
     }),
+    channel = create_channel,
+    channel_from_buffer = create_channel_from_buffer,
 })
+
+return exports :: {
+    types: { [string]: serdes<any> },
+    id_to_type: { [number]: string },
+    type_to_id: { [string]: number },
+    channel: (size: number) -> channel,
+    channel_from_buffer: (buf: buffer) -> channel,
+}

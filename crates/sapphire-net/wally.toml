@@ -1,6 +1,6 @@
 [package]
 name = "mark-marks/sapphire-net"
-version = "0.1.0"
+version = "0.1.1"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
@@ -15,5 +15,5 @@ include = [
 ]
 
 [dependencies]
-squash = "data-oriented-house/squash@2.3.2"
+squash = "data-oriented-house/squash@2.4.0"
 signal = "red-blox/signal@2.0.2"

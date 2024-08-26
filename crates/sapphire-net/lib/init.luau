@@ -17,8 +17,6 @@ local types = require(script.types)
 
 local data_types = require(script.data_types)
 local data_serdes: { [string]: () -> squash.SerDes<unknown> } = data_types.types :: any
-local id_to_type_lookup: { [number]: string } = data_types.id_to_type
-local type_to_id_lookup: { [string]: number } = data_types.type_to_id
 
 local run_context: "server" | "client" = if RunService:IsServer() then "server" else "client"
 local fresh_channel_size: number = 1024
@@ -109,122 +107,74 @@ end
 
 -- EVENT BATCHES
 
+type channel = data_types.channel
+local function create_channel()
+    return data_types.channel(fresh_channel_size)
+end
+
 type reliability_type = "reliable" | "unreliable"
 
 local incoming_signals: { [number]: construct_signal.Signal<any, Player?> } = table.create(fresh_channel_size)
 local incoming_queue: { [number]: queue } = table.create(fresh_channel_size)
 
 -- Only reliable events are batched, as unreliables have a size limit of ~900 bytes
-local outgoing_client = squash.cursor(fresh_channel_size)
-local outgoing_server: { [Player]: squash.Cursor } = {}
+local outgoing_client = create_channel()
+local outgoing_server: { [Player]: channel } = {}
 
 -- Serdes upvalue localizations
 
-local _packet_id_serdes = squash.uint(2)
+local _packet_id_serdes = squash.vlq() --squash.uint(2)
 local packet_id_ser = _packet_id_serdes.ser
 local packet_id_des = _packet_id_serdes.des
 
-local _type_id_serdes = squash.uint(1)
-local type_id_ser = _type_id_serdes.ser
-local type_id_des = _type_id_serdes.des
-
 -- DYNAMIC SERDES
 
--- !! unfortunately, squash treats cursors like a stack
--- this means that data has to be written backwards so it can be read normally;
--- instead of doing | type | | data | we have to do | data | | type |
--- also has to store the length of tables so the packet id serdes upvalues will be used
-
-local function sum<T>(x: T): number
-    local n = 0
-    for _ in x :: any do
-        n += 1
-    end
-    return n
-end
-
-local function dynamic_serialize(cursor: squash.Cursor, value: unknown, fresh: boolean?)
-    if fresh then
-        type_id_ser(cursor, type_to_id_lookup["EOF"])
-    end
-
-    local data_type = typeof(value)
-    if data_type ~= "table" then
-        data_serdes[data_type]().ser(cursor, value)
-        type_id_ser(cursor, type_to_id_lookup[data_type])
-        return
-    end
-
-    for k, v in value :: { [unknown]: unknown } do
-        dynamic_serialize(cursor, v, false)
-        dynamic_serialize(cursor, k, false)
-    end
-    packet_id_ser(cursor, sum(value))
-    type_id_ser(cursor, type_to_id_lookup["table"])
-end
-
-local function dynamic_deserialize(cursor: squash.Cursor): unknown
-    local data_type = id_to_type_lookup[type_id_des(cursor)]
-    if data_type == "EOF" or data_type == nil then
-        return nil
-    end
-    if data_type ~= "table" then
-        return data_serdes[data_type]().des(cursor)
-    end
-
-    local n = packet_id_des(cursor)
-
-    local reconstructed = {}
-
-    for _ = 1, n do
-        local k = dynamic_deserialize(cursor)
-        local v = dynamic_deserialize(cursor)
-        reconstructed[k] = v
-    end
-
-    return reconstructed
-end
+local dynamic_serdes = data_serdes.unknown()
+local dynamic_ser = dynamic_serdes.ser
 
 -- taken from squash, `tryRealloc`
 -- you can't merge cursors
-local function alloc(cursor: squash.Cursor, bytes: number)
-    local b = cursor.Buf
-    local p = cursor.Pos
+local function alloc(channel: channel, bytes: number)
+    local b = channel.Buf
+    local p = channel.Pos
     local len = buffer.len(b)
     if len < p + bytes then
         local exponent = math.ceil(math.log((bytes + p) / len, 1.5))
         local new = buffer.create(len * 1.5 ^ exponent)
         buffer.copy(new, 0, b, 0)
-        cursor.Buf = new
+        channel.Buf = new
     end
 end
 
-local function dump_into_batch(cursor: squash.Cursor, data: buffer)
+local function dump_into_batch(channel: channel, data: buffer, refs: { Instance })
     local len = buffer.len(data)
-    alloc(cursor, len)
-    buffer.copy(cursor.Buf, cursor.Pos, data, 0, len)
-    cursor.Pos += len
+    alloc(channel, len)
+    buffer.copy(channel.Buf, channel.Pos, data, 0, len)
+    channel.Pos += len
+    for id, ref in refs do
+        channel.references[id] = ref
+    end
 end
 
 -- SHARED
 
-local function fire_client_reliable(player: Player, data: buffer)
+local function fire_client_reliable(player: Player, data: buffer, refs: { Instance })
     if not outgoing_server[player] then
-        outgoing_server[player] = squash.cursor(fresh_channel_size)
+        outgoing_server[player] = create_channel()
     end
-    dump_into_batch(outgoing_server[player], data)
+    dump_into_batch(outgoing_server[player], data, refs)
 end
 
-local function fire_client_unreliable(player: Player, data: buffer)
-    unreliable_remote:FireClient(player, data)
+local function fire_client_unreliable(player: Player, data: buffer, refs: { Instance })
+    unreliable_remote:FireClient(player, data, #refs > 0 and refs or nil)
 end
 
-local function fire_server_reliable(data: buffer)
-    dump_into_batch(outgoing_client, data)
+local function fire_server_reliable(data: buffer, refs: { Instance })
+    dump_into_batch(outgoing_client, data, refs)
 end
 
-local function fire_server_unreliable(data: buffer)
-    unreliable_remote:FireServer(data)
+local function fire_server_unreliable(data: buffer, refs: { Instance })
+    unreliable_remote:FireServer(data, #refs > 0 and refs or nil)
 end
 
 -- REPLICATED VALUES
@@ -344,10 +294,10 @@ local function construct_event(
     packet_id: number,
     ser: (cursor: squash.Cursor, value: any) -> ()
 )
-    local fire_client: (player: Player, data: buffer) -> () = if reliability_type == "reliable"
+    local fire_client: (player: Player, data: buffer, refs: { Instance }) -> () = if reliability_type == "reliable"
         then fire_client_reliable
         else fire_client_unreliable
-    local fire_server: (data: buffer) -> () = if reliability_type == "reliable"
+    local fire_server: (data: buffer, refs: { Instance }) -> () = if reliability_type == "reliable"
         then fire_server_reliable
         else fire_server_unreliable
 
@@ -374,50 +324,50 @@ local function construct_event(
     })
 
     function exports.send(data: any)
-        local cursor = squash.cursor(fresh_channel_size)
-        ser(cursor, data)
-        packet_id_ser(cursor, packet_id)
-        fire_server(squash.tobuffer(cursor))
+        local channel = create_channel()
+        ser(channel, data)
+        packet_id_ser(channel, packet_id)
+        fire_server(squash.tobuffer(channel), channel.references)
     end
 
     if run_context == "server" then
         function exports.send_to(player: Player, data: any)
-            local cursor = squash.cursor(fresh_channel_size)
-            ser(cursor, data)
-            packet_id_ser(cursor, packet_id)
-            fire_client(player, squash.tobuffer(cursor))
+            local channel = create_channel()
+            ser(channel, data)
+            packet_id_ser(channel, packet_id)
+            fire_client(player, squash.tobuffer(channel), channel.references)
         end
 
         function exports.send_to_all_except(except: Player, data: any)
-            local cursor = squash.cursor(fresh_channel_size)
-            ser(cursor, data)
-            packet_id_ser(cursor, packet_id)
-            local buf = squash.tobuffer(cursor)
+            local channel = create_channel()
+            ser(channel, data)
+            packet_id_ser(channel, packet_id)
+            local buf = squash.tobuffer(channel)
             for _, player in Players:GetPlayers() do
                 if player == except then
                     continue
                 end
-                fire_client(player, buf)
+                fire_client(player, buf, channel.references)
             end
         end
 
         function exports.send_to_list(players: { Player }, data: any)
-            local cursor = squash.cursor(fresh_channel_size)
-            ser(cursor, data)
-            packet_id_ser(cursor, packet_id)
-            local buf = squash.tobuffer(cursor)
+            local channel = create_channel()
+            ser(channel, data)
+            packet_id_ser(channel, packet_id)
+            local buf = squash.tobuffer(channel)
             for _, player in players do
-                fire_client(player, buf)
+                fire_client(player, buf, channel.references)
             end
         end
 
         function exports.send_to_all(data: any)
-            local cursor = squash.cursor(fresh_channel_size)
-            ser(cursor, data)
-            packet_id_ser(cursor, packet_id)
-            local buf = squash.tobuffer(cursor)
+            local channel = create_channel()
+            ser(channel, data)
+            packet_id_ser(channel, packet_id)
+            local buf = squash.tobuffer(channel)
             for _, player in Players:GetPlayers() do
-                fire_client(player, buf)
+                fire_client(player, buf, channel.references)
             end
         end
     end
@@ -471,15 +421,35 @@ local function create_undefined(name: string, reliability_type: reliability_type
         undefined_replicator.write(undefined_packets)
     end
 
-    readers[packet_id] = "dynamic" :: any
+    readers[packet_id] = dynamic_serdes
 
     incoming_queue[packet_id] = create_queue()
     incoming_signals[packet_id] = construct_signal()
 
-    return construct_event(reliability_type, packet_id, dynamic_serialize)
+    return construct_event(reliability_type, packet_id, dynamic_ser)
 end
 
 -- ENTRYPOINT
+
+local function read(channel: channel, player: Player?)
+    local packet_id = packet_id_des(channel)
+
+    local reader = readers[packet_id]
+    local queue = incoming_queue[packet_id]
+    local signal = incoming_signals[packet_id]
+
+    local data = reader.des(channel)
+    signal:Fire(data, player)
+    push(queue, { data, player })
+end
+
+local function count(x: {}): number
+    local n = 0
+    for _ in x do
+        n += 1
+    end
+    return n
+end
 
 local function extension()
     if run_context == "server" then
@@ -487,7 +457,7 @@ local function extension()
             if outgoing_server[player] then
                 return
             end
-            outgoing_server[player] = squash.cursor(fresh_channel_size)
+            outgoing_server[player] = create_channel()
         end
 
         local function player_removing(player: Player)
@@ -502,69 +472,45 @@ local function extension()
         end
 
         local function replicate()
-            for player, cursor in outgoing_server do
-                if cursor.Pos <= 0 then
+            for player, channel in outgoing_server do
+                if channel.Pos <= 0 then
                     continue
                 end
 
-                local buf = squash.tobuffer(cursor)
-                reliable_remote:FireClient(player, buf)
+                local buf = squash.tobuffer(channel)
+                reliable_remote:FireClient(
+                    player,
+                    buf,
+                    if count(channel.references) > 0 then channel.references else nil
+                )
 
-                outgoing_server[player] = squash.cursor(fresh_channel_size)
+                outgoing_server[player] = create_channel()
             end
         end
 
         RunService.Heartbeat:Connect(replicate)
 
-        reliable_remote.OnServerEvent:Connect(function(player, buf: buffer)
+        reliable_remote.OnServerEvent:Connect(function(player, buf: buffer, references: { Instance }?)
             if typeof(buf) ~= "buffer" then
                 return
             end
 
-            local cursor = squash.frombuffer(buf)
+            local channel = data_types.channel_from_buffer(buf)
+            channel.references = if typeof(references) == "table" then references else nil :: any
 
-            while cursor.Pos > 0 do
-                local packet_id = packet_id_des(cursor)
-
-                local reader = readers[packet_id]
-                local queue = incoming_queue[packet_id]
-                local signal = incoming_signals[packet_id]
-
-                if typeof(reader) ~= "table" then
-                    local data = dynamic_deserialize(cursor)
-                    signal:Fire(data, player)
-                    push(queue, { data, player })
-                    continue
-                end
-
-                local data = reader.des(cursor)
-                signal:Fire(data, player)
-                push(queue, { data, player })
+            while channel.Pos > 0 do
+                read(channel, player)
             end
         end)
 
-        unreliable_remote.OnServerEvent:Connect(function(player, buf: buffer)
+        unreliable_remote.OnServerEvent:Connect(function(player, buf: buffer, references: { Instance }?)
             if typeof(buf) ~= "buffer" then
                 return
             end
 
-            local cursor = squash.frombuffer(buf)
-            local packet_id = packet_id_des(cursor)
-
-            local reader = readers[packet_id]
-            local queue = incoming_queue[packet_id]
-            local signal = incoming_signals[packet_id]
-
-            if typeof(reader) ~= "table" then
-                local data = dynamic_deserialize(cursor)
-                signal:Fire(data, player)
-                push(queue, { data, player })
-                return
-            end
-
-            local data = reader.des(cursor)
-            signal:Fire(data, player)
-            push(queue, { data, player })
+            local channel = data_types.channel_from_buffer(buf)
+            channel.references = if typeof(references) == "table" then references else nil :: any
+            read(channel, player)
         end)
     else
         local elapsed = 0
@@ -580,53 +526,28 @@ local function extension()
             end
 
             local buf = squash.tobuffer(outgoing_client)
-            reliable_remote:FireServer(buf)
-            outgoing_client = squash.cursor(fresh_channel_size)
+            reliable_remote:FireServer(
+                buf,
+                if count(outgoing_client.references) > 0 then outgoing_client.references else nil
+            )
+            outgoing_client = create_channel()
         end
 
         RunService.Heartbeat:Connect(replicate)
 
-        reliable_remote.OnClientEvent:Connect(function(buf: buffer)
-            local cursor = squash.frombuffer(buf)
+        reliable_remote.OnClientEvent:Connect(function(buf: buffer, references: { Instance }?)
+            local channel = data_types.channel_from_buffer(buf)
+            channel.references = if typeof(references) == "table" then references else nil :: any
 
-            while cursor.Pos > 0 do
-                local packet_id = packet_id_des(cursor)
-
-                local reader = readers[packet_id]
-                local queue = incoming_queue[packet_id]
-                local signal = incoming_signals[packet_id]
-
-                if typeof(reader) ~= "table" then
-                    local data = dynamic_deserialize(cursor)
-                    signal:Fire(data)
-                    push(queue, { data })
-                    continue
-                end
-
-                local data = reader.des(cursor)
-                signal:Fire(data)
-                push(queue, { data })
+            while channel.Pos > 0 do
+                read(channel)
             end
         end)
 
-        unreliable_remote.OnClientEvent:Connect(function(buf: buffer)
-            local cursor = squash.frombuffer(buf)
-            local packet_id = packet_id_des(cursor)
-
-            local reader = readers[packet_id]
-            local queue = incoming_queue[packet_id]
-            local signal = incoming_signals[packet_id]
-
-            if typeof(reader) ~= "table" then
-                local data = dynamic_deserialize(cursor)
-                signal:Fire(data)
-                push(queue, { data })
-                return
-            end
-
-            local data = reader.des(cursor)
-            signal:Fire(data)
-            push(queue, { data })
+        unreliable_remote.OnClientEvent:Connect(function(buf: buffer, references: { Instance }?)
+            local channel = data_types.channel_from_buffer(buf)
+            channel.references = if typeof(references) == "table" then references else nil :: any
+            read(channel)
         end)
     end
 end
