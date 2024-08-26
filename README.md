@@ -1,4 +1,18 @@
-# sapphire
+<div align="center">
+<img
+  align="center"
+  src="./assets/sapphire.png"
+  alt="sapphire"
+  width="500px"/>
+
+<br/>
+
+[![Continuous Integration](https://img.shields.io/github/actions/workflow/status/mark-marks/sapphire/ci.yml?style=flat-square&label=Continuous%20Integration)](https://github.com/mark-marks/sapphire/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](https://github.com/Mark-Marks/sapphire/blob/main/LICENSE)
+[![Wally](https://img.shields.io/github/v/tag/mark-marks/sapphire?&style=flat-square)](https://wally.run/package/mark-marks/sapphire)
+</br>
+
+
 A lightweight module loader or a batteries included framework
 
 > [!CAUTION]
