@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/sapphire-ecr",
-  "version": "0.1.1-ts.1",
+  "version": "0.1.0-ts.1",
   "description": "A lightweight ECR scheduler for sapphire",
   "main": "lib/init.luau",
   "types": "lib/index.d.ts",
