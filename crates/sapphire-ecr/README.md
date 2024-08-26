@@ -7,8 +7,8 @@ A lightweight scheduler + niceties (replication, etc.) for [centau/ecr](https://
 [dependencies]
 sapphire_ecr = "mark-marks/sapphire-ecr@LATEST" # replace LATEST with the latest version
 ```
-`wally install`
-2. Extend sapphire with it
+2. `wally install`
+3. Extend sapphire with it
 ```luau
 local sapphire_ecr = require("@pkg/sapphire_ecr")
 
