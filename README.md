@@ -1,12 +1,24 @@
+<div align="center">
+<img
+  align="center"
+  src="./assets/sapphire_darkmode.png#gh-dark-mode-only"
+  alt="sapphire"
+  width="500px"/>
+<img
+  align="center"
+  src="./assets/sapphire_lightmode.png#gh-light-mode-only"
+  alt="sapphire"
+  width="500px"/>
 
-<p align="center">
-  <img src="sapphire_darkmode.png#gh-dark-mode-only" width=500px>
-  <img src="sapphire_lightmode.png#gh-light-mode-only" width=500px>
-</p>
-
+<br/>
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/mark-marks/sapphire/ci.yml?style=for-the-badge&label=Continuous%20Integration)](https://github.com/mark-marks/sapphire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://github.com/Mark-Marks/sapphire/blob/main/LICENSE)
 [![Wally](https://img.shields.io/github/v/tag/mark-marks/sapphire?&style=for-the-badge)](https://wally.run/package/mark-marks/sapphire)
+</br>
+
+</div>
+
+# sapphire
 
 A lightweight module loader or a batteries included framework
 
