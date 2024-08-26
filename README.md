@@ -1,9 +1,8 @@
-<div align="center">
-<img
-  align="center"
-  src="./assets/sapphire.png"
-  alt="sapphire"
-  width="500px"/>
+
+<p align="center">
+  <img src="sapphire_darkmode.png#gh-dark-mode-only" width=500px>
+  <img src="sapphire_lightmode.png#gh-light-mode-only" width=500px>
+</p>
 
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/mark-marks/sapphire/ci.yml?style=for-the-badge&label=Continuous%20Integration)](https://github.com/mark-marks/sapphire/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://github.com/Mark-Marks/sapphire/blob/main/LICENSE)
