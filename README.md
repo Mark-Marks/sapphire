@@ -32,7 +32,7 @@ A lightweight module loader or a batteries included framework
 - [x] Make basic, extensible module loader
 - [ ] Add pre-built extensions:
   - [x] `sapphire-lifecycles` - extra lifecycles for `RunService` and `Players`
-  - [ ] `sapphire-logging` - a nice logging library with a log history
+  - [x] `sapphire-logging` - a nice logging library with a log history
   - [x] `sapphire-net` - optimized networking library that features defined (like `ByteNet`) events and undefined events, both with buffer serdes, albeit undefined events performing worse due to having to define types and lengths in the buffer
   - [x] `sapphire-data` - batteries included wrapper for an existing data library like `keyForm`
   - [x] `sapphire-ecr` - scheduler for ECR with niceties
