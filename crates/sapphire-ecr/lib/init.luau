@@ -28,7 +28,7 @@ SapphireEcr.heartbeat_systems = {} :: { system }
 SapphireEcr.render_stepped_systems = {} :: { system }
 
 function SapphireEcr.extension()
-    RunService.Stepped:Connect(function(delta_time)
+    RunService.Stepped:Connect(function(_, delta_time)
         for _, system in SapphireEcr.stepped_systems do
             fast_spawn(system.runner, delta_time)
         end
