@@ -77,9 +77,11 @@ type spawner<T...> = {
 ```
 
 ### raw_data
+`map<component_id, map<entity_id, component_value>>`
+Migrated from `map<entity_id, map<component_id, component_value>>` to do SoA instead of AoS
 ```luau
 type raw_data = {
-    [ecr.entity]: { [number]: unknown },
+    [number]: { [ecr.entity]: unknown },
 }
 ```
 

@@ -27,6 +27,10 @@ A lightweight module loader or a batteries included framework
 > [!CAUTION]
 > Here be dragons! Sapphire and its extensions are barely tested and in alpha
 
+> [!IMPORTANT]
+> All crates are versioned differently. Whilst the core may be at `v0.1.0`, an extension could be at `v0.5.3`.\
+> Because this is a change @ `v0.1.2`, `sapphire`, `sapphire-lifecycles`, `sapphire-logging` `saphire-net`, `sapphire-data` and `sapphire-ecr` start at `v0.1.2` whilst any other crates don't because they were released after this change.
+
 ## Todo
 - [x] Set up project
 - [x] Make basic, extensible module loader
@@ -53,25 +57,20 @@ There is none, although sapphire tries its best to follow snake_case.
 
 ## Documentation
 
-A documentation website doesn't exist yet, although some form of it can be viewed in extension READMEs:
+A documentation website doesn't exist yet, although an API reference can be viewed in extension READMEs.
 
-### sapphire
-[sapphire/README.md](/crates/sapphire/README.md)
+Do note that some API references might not be fully up to date, although the author tries to maintain them.
 
-### sapphire-lifecycles
-[sapphire-lifecycles/README.md](/crates/sapphire-lifecycles/README.md)
+### [sapphire](/crates/sapphire)
 
-### sapphire-logging
-[sapphire-logging/README.md](/crates/sapphire-logging/README.md)
+### [sapphire-lifecycles](/crates/sapphire-lifecycles)
 
-### sapphire-net
-[sapphire-net/README.md](/crates/sapphire-net/README.md)
+### [sapphire-logging](/crates/sapphire-logging)
 
-### sapphire-data
-[sapphire-data/README.md](/crates/sapphire-data/README.md)
+### [sapphire-net](/crates/sapphire-net)
 
-### sapphire-ecr
-[sapphire-ecr/README.md](/crates/sapphire-ecr/README.md)
+### [sapphire_data](/crates/sapphire-data)
 
-### sapphire-jecs
-[sapphire-jecs/README.md](/crates/sapphire-jecs/README.md)
+### [sapphire-ecr](/crates/sapphire-ecr)
+
+### [sapphire-jecs](/crates/sapphire-jecs)

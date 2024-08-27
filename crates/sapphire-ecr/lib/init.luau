@@ -117,8 +117,10 @@ function SapphireEcr.spawn_entity_with_handle(): ecr.Handle
     return SapphireEcr.registry:handle(entity)
 end
 
+--- `map<component_id, map<entity_id, component_value>>`
+--- Migrated from `map<entity_id, map<component_id, component_value>>` to do SoA instead of AoS
 export type raw_data = {
-    [ecr.entity]: { [number]: unknown },
+    [number]: { [ecr.entity]: unknown },
 }
 
 --- A replicator keeps track of all entities with the passed components and their values -
@@ -242,26 +244,26 @@ function SapphireEcr.create_replicator(...): replicator
 
     for _, component: number in components do
         SapphireEcr.registry:on_add(component):connect(function(entity, added_component)
-            if not raw_data[entity] then
-                raw_data[entity] = {}
-                changes[entity] = {}
+            if not raw_data[component] then
+                raw_data[component] = {}
+                changes[component] = {}
             end
-            raw_data[entity][component] = added_component
-            changes[entity][component] = added_component
+            raw_data[component][entity] = added_component
+            changes[component][entity] = added_component
         end)
         SapphireEcr.registry:on_change(component):connect(function(entity, changed_component)
-            raw_data[entity][component] = changed_component
-            if not changes[entity] then
-                changes[entity] = {}
+            raw_data[component][entity] = changed_component
+            if not changes[component] then
+                changes[component] = {}
             end
-            changes[entity][component] = changed_component
+            changes[component][entity] = changed_component
         end)
         SapphireEcr.registry:on_remove(component):connect(function(entity)
-            raw_data[entity][component] = nil
-            if not changes[entity] then
-                changes[entity] = {}
+            raw_data[component][entity] = nil
+            if not changes[component] then
+                changes[component] = {}
             end
-            changes[entity][component] = nil
+            changes[component][entity] = nil
         end)
     end
 
@@ -276,17 +278,17 @@ function SapphireEcr.create_replicator(...): replicator
     end
 
     local function apply_difference(difference: raw_data)
-        for entity, entity_components in difference do
-            if not SapphireEcr.registry:contains(entity) then
-                SapphireEcr.registry:create(entity)
-            end
+        for component, entities in difference do
+            for entity, component_value in entities do
+                if not SapphireEcr.registry:contains(entity) then
+                    SapphireEcr.registry:create(entity)
+                end
 
-            for component, value in entity_components do
-                local existing_value = SapphireEcr.registry:try_get(entity, component :: any)
-                if existing_value == value then
+                local existing_value = SapphireEcr.registry:try_get(entity, component :: unknown)
+                if existing_value == component_value then
                     continue
                 end
-                SapphireEcr.registry:set(entity, component :: unknown, value)
+                SapphireEcr.registry:set(entity, component :: unknown, component_value)
             end
         end
     end
