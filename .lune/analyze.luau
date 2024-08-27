@@ -20,7 +20,6 @@ for _, crate_name in fs.readDir("crates") do
         continue
     end
 
-    start_process("rojo sourcemap default.project.json -o sourcemap.json", cwd)
     start_process(
         `luau-lsp analyze --definitions=globalTypes.d.luau --base-luaurc=.luaurc --sourcemap=sourcemap.json --settings=luau_lsp_settings.json --no-strict-dm-types --ignore Packages/**/*.lua --ignore Packages/**/*.luau --ignore {cwd}/Packages/**/*.lua --ignore {cwd}/Packages/**/*.luau {cwd}/lib/`
     )

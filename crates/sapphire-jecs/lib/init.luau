@@ -50,13 +50,11 @@ type runnables = {
     heartbeat: { system },
     render_stepped: { system },
 }
-local function collect_runnables(existing: runnables): runnables
-    local runnables = {}
+local function collect_runnables(existing: runnables)
     for loop, event in world:query(cevent):with(cloop):iter() do
         local systems = {}
-        runnables[event] = collect_systems_under_loop(systems, loop)
+        existing[event] = collect_systems_under_loop(systems, loop)
     end
-    return runnables
 end
 
 local runnables: runnables = {
