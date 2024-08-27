@@ -76,7 +76,7 @@ function SapphireJecs.extension()
     world:set(cheartbeat, cevent, "heartbeat")
 
     RunService.Stepped:Connect(function(_, delta_time)
-        for _, system in runnables.render_stepped do
+        for _, system in runnables.stepped do
             fast_spawn(system, delta_time)
         end
     end)
