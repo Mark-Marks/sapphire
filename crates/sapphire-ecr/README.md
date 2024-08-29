@@ -207,7 +207,7 @@ local replicator = sapphire_ecr.create_replicator(component_a, component_b, ...)
 
 function singleton.system()
     return function()
-        local difference = replicator.calculate_difference() --> buffer
+        local difference = replicator.calculate_difference()
         -- There might not be any difference
         if not difference then
             return
@@ -260,7 +260,7 @@ local replicator = sapphire_ecr.create_replicator(component_a, component_b, ...)
 
 function singleton.system()
     return function()
-        local difference = replicator.calculate_difference() --> buffer
+        local difference = replicator.calculate_difference()
         -- There might not be any difference
         if not difference then
             return
@@ -306,7 +306,7 @@ local replicator = sapphire_ecr.create_replicator(component_a, component_b, ...)
 
 function singleton.system()
     return function()
-        local difference = replicator.calculate_difference() --> buffer
+        local difference = replicator.calculate_difference()
         -- There might not be any difference
         if not difference then
             return

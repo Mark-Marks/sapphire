@@ -7,4 +7,4 @@ call_parentheses = "Always"
 collapse_simple_statement = "Never"
 
 [sort_requires]
-enabled = true
+enabled = false

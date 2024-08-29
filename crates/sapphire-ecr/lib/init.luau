@@ -52,11 +52,11 @@ end
 export type spawner<T...> = {
     --- Creates an entity with the given components.
     --- @param ... T...
-    --- @returns ecr.entity
+    --- @return ecr.entity
     spawn: (T...) -> ecr.entity,
     --- Creates an entity with the given components and returns a handle to it.
     --- @param ... T...
-    --- @returns ecr.Handle
+    --- @return ecr.Handle
     spawn_with_handle: (T...) -> ecr.Handle,
 }
 
@@ -128,14 +128,14 @@ export type raw_data = {
 --- The developer can then calculate the difference on the server and send it to the client every time,
 --- on which the difference is then applied to the registry.\
 --- Albeit it's called a replicator, it doesn't replicate the data by itself.
---- It allows the developer to use any networking libary to replicate the changes.
+--- This allows the developer to use any networking libary to replicate the changes.
 --- ```luau
 --- -- server
 --- local replicator = sapphire_ecr.create_replicator(component_a, component_b, ...)
 ---
 --- function singleton.system()
 ---     return function()
----         local difference = replicator.calculate_difference() --> buffer
+---         local difference = replicator.calculate_difference()
 ---         -- There might not be any difference
 ---         if not difference then
 ---             return
@@ -174,7 +174,7 @@ export type replicator = {
     ---
     --- function singleton.system()
     ---     return function()
-    ---         local difference = replicator.calculate_difference() --> buffer
+    ---         local difference = replicator.calculate_difference()
     ---         -- There might not be any difference
     ---         if not difference then
     ---             return
@@ -214,7 +214,7 @@ export type replicator = {
 ---
 --- function singleton.system()
 ---     return function()
----         local difference = replicator.calculate_difference() --> buffer
+---         local difference = replicator.calculate_difference()
 ---         -- There might not be any difference
 ---         if not difference then
 ---             return
@@ -246,6 +246,8 @@ function SapphireEcr.create_replicator(...): replicator
         SapphireEcr.registry:on_add(component):connect(function(entity, added_component)
             if not raw_data[component] then
                 raw_data[component] = {}
+            end
+            if not changes[component] then
                 changes[component] = {}
             end
             raw_data[component][entity] = added_component
