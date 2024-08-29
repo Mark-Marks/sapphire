@@ -313,7 +313,7 @@ Useful for initial replication to every player.
 () -> raw_data
 ```
 ```luau
-local replicator = sapphire_ecr.create_replicator(component_a, component_b, ...)
+local replicator = sapphire_jecs.create_replicator(component_a, component_b, ...)
 
 Players.PlayerAdded:Connect(function(player)
     data_replication_event.send_to(player, replicator.get_full_data())
