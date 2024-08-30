@@ -23,6 +23,7 @@ local world = require(script.world)
 local handle = require(script.handle)
 export type handle = handle.handle
 local ref = require(script.ref)
+local spawner_type = require(script.spawner_type)
 
 local SapphireJecs = {}
 --- @readonly
@@ -191,9 +192,7 @@ end
 --- ```
 --- @param ... T... -- Components to use.
 --- @return spawner<T...>
-function SapphireJecs.create_spawner<T...>(...: T...): spawner<T...>
-    return create_spawner(...)
-end
+SapphireJecs.create_spawner = (create_spawner :: any) :: spawner_type.create_spawner
 
 --- A replicator keeps track of all entities with the passed components and their values -
 --- whenever a component is changed (add, change, remove) and the replicator listens to it, it's also changed within the contained raw data.\

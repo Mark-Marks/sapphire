@@ -9,6 +9,13 @@ local replication_event = events.data_replication.jecs_world
 
 local replication = {}
 
+function replication.start()
+    events.data_replication.loaded.listen(function(_, player)
+        assert(player, "where player")
+        replication_event.send_to(player, replicator.get_full_data())
+    end)
+end
+
 function replication.system()
     return function(delta_time: number)
         local difference = replicator.calculate_difference()

@@ -1,6 +1,8 @@
 # sapphire-jecs
 A lightweight scheduler + niceties (replication, etc.) for [Ukendio/jecs](https://github.com/Ukendio/jecs) for [Mark-Marks/sapphire](https://github.com/Mark-Marks/sapphire)
 
+[And here's a small usage example](/dev/jecs/)
+
 > [!CAUTION]
 > Replicators set the `OnAdd`, `OnSet` and `OnRemove` hooks for tracked components.\
 > This means that any defined of said hooks are overwritten. It is possible to make them coexist, though. For example:

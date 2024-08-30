@@ -1,3 +1,0 @@
-local service = {}
-
-return service

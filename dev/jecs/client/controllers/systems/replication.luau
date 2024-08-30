@@ -9,6 +9,10 @@ local replication_event = events.data_replication.jecs_world
 
 local replication = {}
 
+function replication.start()
+    events.data_replication.loaded.send()
+end
+
 function replication.system()
     return function(delta_time: number)
         for _, difference in replication_event.poll() do
