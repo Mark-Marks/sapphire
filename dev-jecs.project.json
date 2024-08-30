@@ -4,11 +4,11 @@
     "$className": "DataModel",
 
     "ServerScriptService": {
-      "$path": "dev/allother/server"
+      "$path": "dev/jecs/server"
     },
 
     "ReplicatedStorage": {
-      "$path": "dev/allother/shared",
+      "$path": "dev/jecs/shared",
       "Packages": {
         "$path": "Packages",
         "sapphire": {
@@ -37,7 +37,7 @@
 
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "$path": "dev/allother/client"
+        "$path": "dev/jecs/client"
       }
     }
   }

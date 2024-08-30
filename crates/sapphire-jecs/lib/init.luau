@@ -57,8 +57,8 @@ end
 type runnables = { [RBXScriptSignal]: { system } }
 local function collect_runnables(existing: runnables)
     for phase, event in world:query(cevent):with(cphase):iter() do
-        local systems = {}
-        existing[event] = collect_systems_under_phase(systems, phase)
+        existing[event] = {}
+        collect_systems_under_phase(existing[event], phase)
     end
 end
 
@@ -107,7 +107,7 @@ function SapphireJecs.methods.system(singleton)
         )
     end
 
-    local loop: entity = if phase == "pre_simulation"
+    local phase_component: entity = if phase == "pre_simulation"
         then cpre_simulation
         elseif phase == "heartbeat" then cheartbeat
         else crender_stepped
@@ -115,7 +115,7 @@ function SapphireJecs.methods.system(singleton)
     local runner = method(world)
     local system = world:entity()
     world:set(system, csystem, runner)
-    world:add(system, pair(cdepends_on, loop))
+    world:add(system, pair(cdepends_on, phase_component))
     collect_runnables(runnables)
 end
 

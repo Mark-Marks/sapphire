@@ -235,6 +235,7 @@ local function get_replicated_value(name: string): replicated_value
     value_instance.Parent = net_storage
 
     local value = create_replicated_value(value_instance)
+    value.write({})
     existing_replicated_values[name] = value
     return value
 end
