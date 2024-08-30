@@ -1,6 +1,16 @@
 # sapphire-jecs
 A lightweight scheduler + niceties (replication, etc.) for [Ukendio/jecs](https://github.com/Ukendio/jecs) for [Mark-Marks/sapphire](https://github.com/Mark-Marks/sapphire)
 
+> [!CAUTION]
+> Replicators set the `OnAdd`, `OnSet` and `OnRemove` hooks for tracked components.\
+> This means that any defined of said hooks are overwritten. It is possible to make them coexist, though. For example:
+> ```luau
+> local on_add = world:get(component, OnAdd)
+> world:set(component, OnAdd, function(entity)
+>     on_add(entity)
+> end)
+> ```
+
 # Installation
 1. Install it with wally
 ```toml
