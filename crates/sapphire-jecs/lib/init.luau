@@ -22,7 +22,9 @@ local pair = jecs.pair
 local world = require(script.world)
 local handle = require(script.handle)
 export type handle = handle.handle
-local ref = require(script.ref)
+local _ref = require(script.ref)
+local ref = _ref.ref
+local ref_on_created = _ref.on_created
 local spawner_type = require(script.spawner_type)
 
 local SapphireJecs = {}
@@ -128,6 +130,7 @@ function SapphireJecs.handle(entity: entity): handle
 end
 
 SapphireJecs.ref = ref
+SapphireJecs.on_created = ref_on_created
 
 --- Creates a new entity and returns its id.
 --- @return entity
