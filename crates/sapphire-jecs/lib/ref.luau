@@ -1,12 +1,14 @@
 --!strict
 local signal = require(script.Parent.Parent.signal)
---- Fires whenever a reference with a given key creates a new entity.
---- Useful to track freshly replicated entities.
---- @type signal<<number> entity, <any> key>
-local on_created: signal.Signal<number, any> = signal()
 
 local world = require(script.Parent.world)
 local handle = require(script.Parent.handle)
+
+--- Fires whenever a reference with a given key creates a new entity.
+--- Useful to track freshly replicated entities.
+--- @type signal<<entity> entity, <any> key>
+local on_created: signal.Signal<handle.entity, any> = signal()
+
 local refs = {}
 
 --- Gets an entity the given key references to.

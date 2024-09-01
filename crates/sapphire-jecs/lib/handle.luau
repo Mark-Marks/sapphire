@@ -1,7 +1,7 @@
 --!strict
 local jecs = require(script.Parent.Parent.jecs)
-type entity<T = nil> = jecs.Entity<T>
-type id<T = nil> = entity<T> | jecs.Pair
+export type entity<T = nil> = jecs.Entity<T>
+export type id<T = nil> = entity<T> | jecs.Pair
 
 local world = require(script.Parent.world)
 
