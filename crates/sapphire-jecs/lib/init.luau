@@ -25,6 +25,8 @@ export type handle = handle.handle
 local _ref = require(script.ref)
 local ref = _ref.ref
 local ref_on_created = _ref.on_created
+local collect = require(script.collect)
+export type collect_signal<T...> = collect.signal<T...>
 local spawner_type = require(script.spawner_type)
 
 local SapphireJecs = {}
@@ -131,6 +133,7 @@ end
 
 SapphireJecs.ref = ref
 SapphireJecs.on_created = ref_on_created
+SapphireJecs.collect = collect
 
 --- Creates a new entity and returns its id.
 --- @return entity
