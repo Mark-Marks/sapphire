@@ -6,7 +6,6 @@ local RunService = game:GetService("RunService")
 local is_client = RunService:IsClient()
 
 local jabby = require(script.Parent.jabby)
-local fast_spawn = require(script.Parent.spawn)
 local jecs = require(script.Parent.jecs)
 --- An i53, can be represented with an f64.
 export type i53 = number
@@ -125,7 +124,7 @@ function SapphireJecs.extension()
                 end
 
                 jabby_scheduler:_mark_system_frame_start(id)
-                fast_spawn(system.run, ...)
+                system.run(...)
                 jabby_scheduler:_mark_system_frame_end(id)
             end
         end
