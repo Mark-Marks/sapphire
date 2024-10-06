@@ -79,7 +79,7 @@ local crender_stepped = world:component()
 local cheartbeat = world:component()
 
 local function collect_systems_under_phase(systems: { system }, phase: entity)
-    for entity, system in world:query(csystem):with(pair(cdepends_on, phase)):iter() do
+    for _, system in world:query(csystem):with(pair(cdepends_on, phase)):iter() do
         table.insert(systems, system)
     end
 
