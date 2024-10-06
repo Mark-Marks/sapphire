@@ -198,19 +198,19 @@ Systems on the server that use `RenderStepped` will be migrated to `Heartbeat`.
 
 ## Functions
 
-### .spawn_entity()
+### .entity()
 Creates an entity and returns its id.
 ```luau
 () -> entity
 ```
 
-### .spawn_entity_with_handle()
+### .entity_with_handle()
 Creates an entity and returns a handle to it.
 ```luau
 () -> handle
 ```
 
-### .create_spawner()
+### .spawner()
 Creates a spawner.
 ```luau
 <T...>(
@@ -224,7 +224,7 @@ for _ = 1, 1000 do
 end
 ```
 
-### .create_replicator
+### .replicator
 Creates a "replicator"
 ```luau
 (
