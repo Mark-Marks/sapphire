@@ -1,3 +1,0 @@
-local controller = {}
-
-return controller

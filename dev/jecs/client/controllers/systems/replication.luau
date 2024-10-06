@@ -1,10 +1,10 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local jecs = require(ReplicatedStorage.Packages.sapphire_jecs)
+local ecs = require(ReplicatedStorage.Packages.sapphire_jecs)
 local components = require(ReplicatedStorage.components)
 local events = require(ReplicatedStorage.events)
 
-local replicator = jecs.create_replicator(components.part, components.position, components.velocity)
+local replicator = ecs.replicator(components.part, components.position, components.velocity)
 local replication_event = events.data_replication.jecs_world
 
 local replication = {}

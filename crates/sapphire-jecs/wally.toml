@@ -1,6 +1,6 @@
 [package]
 name = "mark-marks/sapphire-jecs"
-version = "0.1.6"
+version = "0.2.0-rc.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
@@ -15,6 +15,8 @@ include = [
 ]
 
 [dependencies]
-jecs = "ukendio/jecs@0.2.10"
+jecs_utils = "mark-marks/jecs-utils@0.1.4"
 signal = "red-blox/signal@2.0.2"
 spawn = "red-blox/spawn@1.1.0"
+jecs = "ukendio/jecs@0.3.2"
+jabby = "alicesaidhi/jabby@0.2.0-rc.2"

@@ -1,13 +1,13 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local jecs = require(ReplicatedStorage.Packages.sapphire_jecs)
+local ecs = require(ReplicatedStorage.Packages.sapphire_jecs)
 local components = require(ReplicatedStorage.components)
 
 local spawn_parts = {}
 
 function spawn_parts.start()
-    local spawner = jecs.create_spawner(components.part, components.position, components.velocity)
+    local spawner = ecs.spawner(components.part, components.position, components.velocity)
 
     local max = 2147483647
 

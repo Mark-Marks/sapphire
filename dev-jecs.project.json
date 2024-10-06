@@ -1,5 +1,6 @@
 {
   "name": "sapphire-dev",
+  "emitLegacyScripts": false,
   "tree": {
     "$className": "DataModel",
 
@@ -9,6 +10,9 @@
 
     "ReplicatedStorage": {
       "$path": "dev/jecs/shared",
+      "client": {
+        "$path": "dev/jecs/client"
+      },
       "Packages": {
         "$path": "Packages",
         "sapphire": {
@@ -32,12 +36,6 @@
         "sapphire_net": {
           "$path": "crates/sapphire-net"
         }
-      }
-    },
-
-    "StarterPlayer": {
-      "StarterPlayerScripts": {
-        "$path": "dev/jecs/client"
       }
     }
   }
