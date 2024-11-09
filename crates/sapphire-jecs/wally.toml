@@ -1,6 +1,6 @@
 [package]
 name = "mark-marks/sapphire-jecs"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"

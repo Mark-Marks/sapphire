@@ -115,7 +115,14 @@ function SapphireJecs.extension()
     registered_phases["heartbeat"] = cheartbeat
 
     local function runner(event: event): (...any) -> ()
+        local current_sys: (...any) -> () = nil
+        local current_args: {} = nil
+        local function call_system()
+            current_sys(unpack(current_args))
+        end
+
         return function(...)
+            current_args = table.pack(...)
             for _, system in runnables[event] do
                 local id = system.id
                 local system_data = jabby_scheduler.system_data[id]
@@ -123,8 +130,12 @@ function SapphireJecs.extension()
                     continue
                 end
 
+                current_sys = system.run
+
                 jabby_scheduler:_mark_system_frame_start(id)
-                system.run(...)
+                for _ in call_system :: any do
+                    break
+                end
                 jabby_scheduler:_mark_system_frame_end(id)
             end
         end
