@@ -20,6 +20,10 @@
 
 </div>
 
+# SOON TO BE ARCHIVED
+
+Sapphire will be archived as soon as all of the extensions are updated to the latest versions of their dependencies, and Lyra is integrated as the library behind sapphire-data.
+
 # sapphire
 
 A lightweight module loader or a batteries included framework
