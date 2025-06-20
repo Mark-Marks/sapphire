@@ -20,9 +20,10 @@
 
 </div>
 
-# SOON TO BE ARCHIVED
+# ARCHIVED
 
-Sapphire will be archived as soon as all of the extensions are updated to the latest versions of their dependencies, and Lyra is integrated as the library behind sapphire-data.
+Sapphire has been archived due to being unmaintained and serving practically no purpose in my eyes.\
+If you'd like an alternative, consider [Quill](https://github.com/featherfall-org/quill), which is similar to Sapphire, or [prvdmwrong](https://github.com/prvdmwrong/prvdmwrong). Happy coding!
 
 # sapphire
 
